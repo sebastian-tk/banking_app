@@ -95,13 +95,17 @@ public class Customer implements ValidatorPersonalData{
     }
 
     public void service(String hashPassword,byte[] salt) {
+        Scanner scanner = new Scanner(System.in);
         if (login(hashPassword,salt)) {
             do {
-                Account serveAccount = getAccountToService();
+                Account serveAccount = getAccountToService(scanner);
                 menuAccount();
-                switch (readChoice(generateNumber(1, 3))) {
-                    case 1 -> System.out.println();
-                    case 2 -> System.out.println();
+                switch (readChoice(scanner,generateNumber(1, 3))) {
+                    case 1 -> balanceAccount(serveAccount);
+                    case 2 -> {
+                        boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)),serveAccount);
+                        System.out.println(answerWithdraw ? "\t#Not enough money":"\t#Money withdrawn successfully;-)");
+                    }
                     case 3 -> System.out.println();
                     default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
                 }
@@ -145,6 +149,54 @@ public class Customer implements ValidatorPersonalData{
 
 
     /**
+     *
+     * @param serveAccount  object Account
+     *                      Method prints data account by pattern: numberAccount,amountMoney
+     */
+    private void balanceAccount(Account serveAccount) {
+        System.out.println(serveAccount.getNumber() + ": " + serveAccount.getAmountMoney() + "zl");
+    }
+
+    /**
+     *
+     * @param moneyOut object BigDecimal as money to withdraw
+     * @param account   object Account
+     * @return  true, if the money was successfully paid out, else false
+     */
+    protected boolean withdrawMoney(BigDecimal moneyOut,Account account){
+        if(moneyOut==null || moneyOut.compareTo(BigDecimal.ZERO)<=0){
+            throw new IllegalArgumentException("Invalid money argument when withdrawing");
+        }
+        if(account==null){
+            throw new IllegalArgumentException("Invalid account argument when withdrawing");
+        }
+        if(isThereNotEnoughMoney(moneyOut, account)){
+            return false;
+        }
+        account.subtractMoney(moneyOut);
+        return true;
+    }
+
+
+    /**
+     *
+     * @param moneyToWithdrawn object BigDecimal as money to withdraw
+     * @param account   object Account to check account balance
+     * @return  true, if there is less money in account than money to withdraw, else false
+     */
+    private boolean isThereNotEnoughMoney(BigDecimal moneyToWithdrawn,Account account){
+        return account.getAmountMoney().compareTo(moneyToWithdrawn) < 0;
+    }
+
+    /**
+     *
+     * @param scanner object Scanner
+     * @return String as positive double value
+     */
+    private String readAmountMoney(Scanner scanner){
+        return  readDataFromUser(scanner,"amount money: ",Account::isDecimalNotPositiveValue);
+    }
+    /**
      * Method prints menu to service account
      */
     private void menuAccount(){
@@ -156,16 +208,17 @@ public class Customer implements ValidatorPersonalData{
     }
     /**
      *
+     * @param scanner object Scanner
      * @return  object Account chosen by the customer
      */
-    private Account getAccountToService(){
+    private Account getAccountToService(Scanner scanner){
         int amountAccount = accountSet.size();
         if( amountAccount == 1){
             return convertAccountsToList().get(0);
         }
         System.out.println("\t>>>Select an account");
         List<Account> accountList = printNumbersAccount();
-        int nrAccount = readChoice(generateNumber(1,amountAccount));
+        int nrAccount = readChoice(scanner,generateNumber(1,amountAccount));
         return accountList.get(nrAccount-1);
     }
 
@@ -215,11 +268,11 @@ public class Customer implements ValidatorPersonalData{
     }
     /**
      *
+     * @param scanner object Scanner
      * @param acceptableChoices List<Integer>
      * @return integer value as an acceptable number selected by the user
      */
-    private int readChoice(List<Integer> acceptableChoices){
-        Scanner scanner = new Scanner(System.in);
+    private int readChoice(Scanner scanner,List<Integer> acceptableChoices){
         int bufferChoice;
         do{
             System.out.print("choice: ");
