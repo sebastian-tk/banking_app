@@ -64,7 +64,7 @@ public class Account {
      * @param moneyToAdd object BigDecimal as amount money to get
      *                 Method add moneyToAdd to amount money
      */
-    public void addMoney(BigDecimal moneyToAdd){
+    protected void addMoney(BigDecimal moneyToAdd){
         if(moneyToAdd == null || moneyToAdd.compareTo(BigDecimal.ZERO)<=0){
             throw new IllegalArgumentException("Incorrect addMoney argument");
         }
@@ -76,7 +76,7 @@ public class Account {
      * @param moneyToGet object BigDecimal as amount money to add
      *                   Method subtract moneyToGet from amountMoney
      */
-    public void subtractMoney(BigDecimal moneyToGet){
+    protected void subtractMoney(BigDecimal moneyToGet){
         if(moneyToGet == null || moneyToGet.compareTo(BigDecimal.ZERO)<=0){
             throw new IllegalArgumentException("Invalid moneyToGet argument");
         }

@@ -25,7 +25,7 @@ import static org.app.customer.ValidatorPersonalData.*;
 @EqualsAndHashCode
 @ToString
 @Getter
-public class Customer implements ValidatorPersonalData{
+public class Customer implements ValidatorPersonalData {
     private String name;
     private String surname;
     private Pesel pesel;
@@ -34,7 +34,7 @@ public class Customer implements ValidatorPersonalData{
     private String phoneNumber;
     private Set<Account> accountSet;
 
-    public Customer(Account accountNumber){
+    public Customer(Account accountNumber) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(">>>> NEW CUSTOMER <<<<");
         init(scanner);
@@ -53,290 +53,296 @@ public class Customer implements ValidatorPersonalData{
     }
 
     /**
-     *
-     * @param name String as name
-     * @param surname   String as surname
-     * @param pesel String as number
-     * @param address   String as address
-     * @param email String as email
-     * @param phoneNumber   String as phoneNumber
-     * @param accountSet    reference HasSet<Account>
-     * @return  created new Customer
+     * @param name        String as name
+     * @param surname     String as surname
+     * @param pesel       String as number
+     * @param address     String as address
+     * @param email       String as email
+     * @param phoneNumber String as phoneNumber
+     * @param accountSet  reference HasSet<Account>
+     * @return created new Customer
      */
     public static Customer createCustomer(String name, String surname, String pesel, String address, String email, String phoneNumber, Set<Account> accountSet) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Invalid name argument when create customer");
         }
-        if(surname == null || surname.isEmpty()){
+        if (surname == null || surname.isEmpty()) {
             throw new IllegalArgumentException("Invalid surname argument when create customer");
         }
-        if(address == null || address.isEmpty()){
+        if (address == null || address.isEmpty()) {
             throw new IllegalArgumentException("Invalid address argument when create customer");
         }
-        if(isAddressNotCorrect(address)){
-            throw new IllegalArgumentException("Incorrect address syntax: "+address);
+        if (isAddressNotCorrect(address)) {
+            throw new IllegalArgumentException("Incorrect address syntax: " + address);
         }
-        if(email==null || email.isEmpty()){
+        if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("Invalid email argument when create customer");
         }
-        if(isEmailNotCorrect(email)){
-            throw new IllegalArgumentException("Incorrect email syntax: "+email);
+        if (isEmailNotCorrect(email)) {
+            throw new IllegalArgumentException("Incorrect email syntax: " + email);
         }
-        if(phoneNumber == null || phoneNumber.isEmpty()){
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
             throw new IllegalArgumentException("Invalid phoneNumber argument when create customer");
         }
-        if(isNumberNotCorrect(phoneNumber)){
+        if (isNumberNotCorrect(phoneNumber)) {
             throw new IllegalArgumentException("Incorrect phoneNumber syntax");
         }
-        if(accountSet == null || accountSet.isEmpty()){
+        if (accountSet == null || accountSet.isEmpty()) {
             throw new IllegalArgumentException("Invalid accountSet argument when create customer");
         }
-        return new Customer(name,surname,Pesel.createPesel(pesel),address,email,phoneNumber,accountSet);
+        return new Customer(name, surname, Pesel.createPesel(pesel), address, email, phoneNumber, accountSet);
     }
 
-    public void service(String hashPassword,byte[] salt) {
+    public void service(String hashPassword, byte[] salt) {
         Scanner scanner = new Scanner(System.in);
-        if (login(hashPassword,salt)) {
+        if (login(hashPassword, salt)) {
             do {
                 Account serveAccount = getAccountToService(scanner);
                 menuAccount();
-                switch (readChoice(scanner,generateNumber(1, 3))) {
+                switch (readChoice(scanner, generateNumber(1, 3))) {
                     case 1 -> balanceAccount(serveAccount);
                     case 2 -> {
-                        boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)),serveAccount);
-                        System.out.println(answerWithdraw ? "\t#Not enough money":"\t#Money withdrawn successfully;-)");
+                        boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                        System.out.println(answerWithdraw ? "\t#Not enough money" : "\t#Money withdrawn successfully;-)");
                     }
-                    case 3 -> System.out.println();
+                    case 3 -> {
+                        depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                        System.out.println("\t#Money deposit successfully;-)");
+                    }
                     default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
                 }
             } while (isYesOrNo("do you want to do any more activities"));
+            System.out.println("\t\t### LOGOUT");
         }
     }
 
     /**
-     *
      * @param hashPassword String as hashPassword
-     * @param salt  array bytes as salt
-     * @return  true if customer login was successful, false otherwise
+     * @param salt         array bytes as salt
+     * @return true if customer login was successful, false otherwise
      */
-    private boolean login(String hashPassword,byte[] salt){
-        if(hashPassword == null || hashPassword.isEmpty()){
+    private boolean login(String hashPassword, byte[] salt) {
+        if (hashPassword == null || hashPassword.isEmpty()) {
             throw new IllegalArgumentException("Invalid hashPassword argument in service");
         }
-        if(salt == null || salt.length==0){
+        if (salt == null || salt.length == 0) {
             throw new IllegalArgumentException("Invalid salt argument in service");
         }
-        final int NUMBER_LOGIN_ATTEMPTS= 3;
+        final int NUMBER_LOGIN_ATTEMPTS = 3;
         Scanner scanner = new Scanner(System.in);
         boolean answer = false;
-        int counter=0;
+        int counter = 0;
         char[] bufferPassword;
         do {
             bufferPassword = convertToChars(readExpression(scanner, "enter password: "));
-            if (areEquals(hashPassword,EncryptedPassword.generatePasswordHash(bufferPassword,salt),String::equals)) {
+            if (areEquals(hashPassword, EncryptedPassword.generatePasswordHash(bufferPassword, salt), String::equals)) {
                 System.out.println("\t Successful login  ;-)\n");
                 answer = true;
             } else {
                 counter++;
                 System.out.println("\t# Invalid password");
             }
-        } while (!answer && counter!=NUMBER_LOGIN_ATTEMPTS);
+        } while (!answer && counter != NUMBER_LOGIN_ATTEMPTS);
         if (counter == NUMBER_LOGIN_ATTEMPTS) {
             System.out.println("\t### ACCESS DENIED ###");
         }
         return answer;
     }
 
-
     /**
-     *
-     * @param serveAccount  object Account
-     *                      Method prints data account by pattern: numberAccount,amountMoney
+     * @param serveAccount object Account
+     *                     Method prints data account by pattern: numberAccount,amountMoney
      */
     private void balanceAccount(Account serveAccount) {
         System.out.println(serveAccount.getNumber() + ": " + serveAccount.getAmountMoney() + "zl");
     }
 
     /**
-     *
      * @param moneyOut object BigDecimal as money to withdraw
-     * @param account   object Account
-     * @return  true, if the money was successfully paid out, else false
+     * @param account  object Account
+     * @return true, if the money was successfully paid out, else false
      */
-    protected boolean withdrawMoney(BigDecimal moneyOut,Account account){
-        if(moneyOut==null || moneyOut.compareTo(BigDecimal.ZERO)<=0){
+    protected boolean withdrawMoney(BigDecimal moneyOut, Account account) {
+        if (moneyOut == null || moneyOut.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Invalid money argument when withdrawing");
         }
-        if(account==null){
+        if (account == null) {
             throw new IllegalArgumentException("Invalid account argument when withdrawing");
         }
-        if(isThereNotEnoughMoney(moneyOut, account)){
+        if (isThereNotEnoughMoney(moneyOut, account)) {
             return false;
         }
         account.subtractMoney(moneyOut);
         return true;
     }
 
+    /**
+     * @param nextMoney object BigDecimal with new money to add
+     * @param account   object Account
+     *                  Method add nextMoney to amountMoney of account
+     */
+    protected void depositMoney(BigDecimal nextMoney, Account account) {
+        if (nextMoney == null || nextMoney.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Invalid money argument when depositing");
+        }
+        if (account == null) {
+            throw new IllegalArgumentException("Invalid account argument when depositing");
+        }
+        account.addMoney(nextMoney);
+    }
+
 
     /**
-     *
      * @param moneyToWithdrawn object BigDecimal as money to withdraw
-     * @param account   object Account to check account balance
-     * @return  true, if there is less money in account than money to withdraw, else false
+     * @param account          object Account to check account balance
+     * @return true, if there is less money in account than money to withdraw, else false
      */
-    private boolean isThereNotEnoughMoney(BigDecimal moneyToWithdrawn,Account account){
+    private boolean isThereNotEnoughMoney(BigDecimal moneyToWithdrawn, Account account) {
         return account.getAmountMoney().compareTo(moneyToWithdrawn) < 0;
     }
 
     /**
-     *
      * @param scanner object Scanner
      * @return String as positive double value
      */
-    private String readAmountMoney(Scanner scanner){
-        return  readDataFromUser(scanner,"amount money: ",Account::isDecimalNotPositiveValue);
+    private String readAmountMoney(Scanner scanner) {
+        return readDataFromUser(scanner, "amount money: ", Account::isDecimalNotPositiveValue);
     }
+
     /**
      * Method prints menu to service account
      */
-    private void menuAccount(){
+    private void menuAccount() {
         System.out.println("\t\t\t" + name + " " + surname);
         System.out.println("\t ****** MENU ACCOUNT *******");
         System.out.println("1. Check account balance");
         System.out.println("2. Withdraw money");
         System.out.println("3. Deposit money");
     }
+
     /**
-     *
      * @param scanner object Scanner
-     * @return  object Account chosen by the customer
+     * @return object Account chosen by the customer
      */
-    private Account getAccountToService(Scanner scanner){
+    private Account getAccountToService(Scanner scanner) {
         int amountAccount = accountSet.size();
-        if( amountAccount == 1){
+        if (amountAccount == 1) {
             return convertAccountsToList().get(0);
         }
         System.out.println("\t>>>Select an account");
         List<Account> accountList = printNumbersAccount();
-        int nrAccount = readChoice(scanner,generateNumber(1,amountAccount));
-        return accountList.get(nrAccount-1);
+        int nrAccount = readChoice(scanner, generateNumber(1, amountAccount));
+        return accountList.get(nrAccount - 1);
     }
 
     /**
-     *
-     * @return  List with Accounts this customer and print this numbers
+     * @return List with Accounts this customer and print this numbers
      */
-    private List<Account> printNumbersAccount(){
-        List<Account> accountsList=convertAccountsToList();
-        int idx=0;
-        for(var element : accountsList){
+    private List<Account> printNumbersAccount() {
+        List<Account> accountsList = convertAccountsToList();
+        int idx = 0;
+        for (var element : accountsList) {
             idx++;
-            System.out.println(idx+"."+element.getNumber());
+            System.out.println(idx + "." + element.getNumber());
         }
         return accountsList;
     }
 
     /**
-     *
      * @param question String as question for user
-     * @return  true, if user answered yes or false if user answered false
+     * @return true, if user answered yes or false if user answered false
      */
-    private boolean isYesOrNo(String question){
+    private boolean isYesOrNo(String question) {
         Scanner scanner = new Scanner(System.in);
         String buffer;
-        do{
-            buffer = readExpression(scanner,question + "(yes/no):");
-            if( !areEquals(buffer,"yes",String::equals) && !areEquals(buffer,"no",String::equals)){
+        do {
+            buffer = readExpression(scanner, question + "(yes/no):");
+            if (!areEquals(buffer, "yes", String::equals) && !areEquals(buffer, "no", String::equals)) {
                 System.out.println("\t# Unavailable answer");
-                buffer="";
+                buffer = "";
             }
-        }while (buffer.isEmpty());
-        return areEquals(buffer,"yes",String::equals);
+        } while (buffer.isEmpty());
+        return areEquals(buffer, "yes", String::equals);
     }
 
     /**
-     *
      * @param minRange minimum range
      * @param maxRange maximum range
-     * @return  List<Integer> with numbers between minRange and maxRange
+     * @return List<Integer> with numbers between minRange and maxRange
      */
-    private List<Integer> generateNumber(int minRange, int maxRange){
-        if(minRange>maxRange){
+    private List<Integer> generateNumber(int minRange, int maxRange) {
+        if (minRange > maxRange) {
             throw new IllegalArgumentException("Invalid range arguments");
         }
         return IntStream.rangeClosed(minRange, maxRange).boxed().toList();
     }
+
     /**
-     *
-     * @param scanner object Scanner
+     * @param scanner           object Scanner
      * @param acceptableChoices List<Integer>
      * @return integer value as an acceptable number selected by the user
      */
-    private int readChoice(Scanner scanner,List<Integer> acceptableChoices){
+    private int readChoice(Scanner scanner, List<Integer> acceptableChoices) {
         int bufferChoice;
-        do{
+        do {
             System.out.print("choice: ");
-            while (!scanner.hasNextInt()){
+            while (!scanner.hasNextInt()) {
                 System.out.println("\t#incorrect value");
                 scanner.nextLine();
             }
             bufferChoice = parseToInt(scanner.nextLine());
-            if(!acceptableChoices.contains(bufferChoice)){
+            if (!acceptableChoices.contains(bufferChoice)) {
                 System.out.println("\tThere is no such choice");
-                bufferChoice=0;
+                bufferChoice = 0;
             }
-        }while (bufferChoice==0);
+        } while (bufferChoice == 0);
         return bufferChoice;
     }
 
     /**
-     *
      * @param value String as value to parse
-     * @return  integer value as parsed integer from value
+     * @return integer value as parsed integer from value
      */
-    private int parseToInt(String value){
+    private int parseToInt(String value) {
         return Integer.parseInt(value);
     }
 
     /**
-     *
      * @return List with Accounts from accountSet
      */
-    private List<Account> convertAccountsToList(){
+    private List<Account> convertAccountsToList() {
         return accountSet.stream().toList();
     }
 
     /**
-     *
      * @param scanner object Scanner to read data from user
      *                Method loads subsequent fields of the Customer class except Account
      */
-    private void init(Scanner scanner){
-        this.name = readDataFromUser(scanner,"name: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
-        this.surname = readDataFromUser(scanner,"surname: ",ValidatorPersonalData::isNameOrSurnameNotCorrect);
-        this.pesel = Pesel.createPesel(readDataFromUser(scanner,"pesel: ",dataFromUser->!Pesel.isPeselCorrect(dataFromUser)));
-        this.address = readDataFromUser(scanner,"address: ",ValidatorPersonalData::isAddressNotCorrect);
-        this.email=readDataFromUser(scanner,"email: ",ValidatorPersonalData::isEmailNotCorrect);
-        this.phoneNumber = readDataFromUser(scanner,"phoneNumber: ",ValidatorPersonalData::isNumberNotCorrect);
+    private void init(Scanner scanner) {
+        this.name = readDataFromUser(scanner, "name: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
+        this.surname = readDataFromUser(scanner, "surname: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
+        this.pesel = Pesel.createPesel(readDataFromUser(scanner, "pesel: ", dataFromUser -> !Pesel.isPeselCorrect(dataFromUser)));
+        this.address = readDataFromUser(scanner, "address: ", ValidatorPersonalData::isAddressNotCorrect);
+        this.email = readDataFromUser(scanner, "email: ", ValidatorPersonalData::isEmailNotCorrect);
+        this.phoneNumber = readDataFromUser(scanner, "phoneNumber: ", ValidatorPersonalData::isNumberNotCorrect);
     }
 
     /**
-     *
-     * @param scanner object Scanner
-     * @param nameData  String as name of data to read
-     * @param pred  interface Predicate
-     * @return  correct String from user
+     * @param scanner  object Scanner
+     * @param nameData String as name of data to read
+     * @param pred     interface Predicate
+     * @return correct String from user
      */
-    private String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred){
+    private String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred) {
         String buffer;
         boolean run;
-        do{
-            buffer = readExpression(scanner,"enter "+nameData);
-            run= pred.test(buffer);
-            if(run){
-                System.out.println("\t#Invalid "+nameData);
+        do {
+            buffer = readExpression(scanner, "enter " + nameData);
+            run = pred.test(buffer);
+            if (run) {
+                System.out.println("\t#Invalid " + nameData);
             }
-        }while (run);
+        } while (run);
         return buffer;
     }
 
@@ -351,12 +357,11 @@ public class Customer implements ValidatorPersonalData{
     }
 
     /**
-     *
      * @param firstObj  second object to compare
-     * @param secondObj  first object to compare
-     * @return  true, if firstObj is equal with secondObj, else false
+     * @param secondObj first object to compare
+     * @return true, if firstObj is equal with secondObj, else false
      */
-    private <T> boolean areEquals(T firstObj, T secondObj, BiPredicate<T,T> pred){
-        return pred.test(firstObj,secondObj);
+    private <T> boolean areEquals(T firstObj, T secondObj, BiPredicate<T, T> pred) {
+        return pred.test(firstObj, secondObj);
     }
 }
