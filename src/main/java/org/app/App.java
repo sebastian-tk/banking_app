@@ -51,7 +51,7 @@ public class App {
         try{
             Bank bank = createBank(path.concat(fileBusinessCustomers),path.concat(fileCustomers),path.concat(filePasswords));
             bank.service();
-            bank.addCustomer(Customer.createCustomer(
+           /* bank.addCustomer(Customer.createCustomer(
                     "Jerzy",
                     "Lewandowski",
                     "75072796555",
@@ -62,9 +62,10 @@ public class App {
                             Account.createAccount("personal", new BigInteger("12345678901234567890666666"), new BigDecimal("1550.5")),
                             Account.createAccount("personal", new BigInteger("12345678901234567888666777"), new BigDecimal("123.4"))
                     )), convertToChars("jurek2")
-            );
+            );*/
         }catch (Exception e){
             System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
         System.out.println(" ### BANK CLOSED ###");
     }

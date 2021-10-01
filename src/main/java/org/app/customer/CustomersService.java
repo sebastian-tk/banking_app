@@ -1,5 +1,7 @@
 package org.app.customer;
 
+import org.app.business_customer.BusinessCustomer;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -87,12 +89,17 @@ public class CustomersService {
      */
     private void registrationNewUser(){
         menuRegistration();
-        int choice = readChoice(scanner,1);
+        int choice = readChoice(scanner,2);
         switch(choice){
             case 1-> {
                 serveAccount = Account.createAccount("Personal",getNewAccountNumber(),new BigDecimal("0"));
                 serveCustomer = new Customer(serveAccount);
             }
+            case 2-> {
+                serveAccount = Account.createAccount("Company",getNewAccountNumber(),new BigDecimal("0"));
+                serveCustomer = new BusinessCustomer(serveAccount);
+            }
+            default -> throw new IllegalStateException("\t#Error-unacceptable choice in registration new user of CustomerService");
         }
         String hashPassword = generateFullHash(convertToChars(readExpression(scanner,"enter password:")));
         if(isUserExist(serveCustomer.getPesel())){

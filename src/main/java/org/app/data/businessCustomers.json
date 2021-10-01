@@ -1,0 +1,25 @@
+{
+  "businessCustomers": [
+    {
+      "nameCompany": "ServiceIt",
+      "addressCompany": "ul. Wajdy 34 10-200 Wroclaw",
+      "nip": "1097377975",
+      "regon": "265600200",
+      "name": "Tomasz",
+      "surname": "Kwasniewski",
+      "pesel": {
+        "number": "67101097948"
+      },
+      "address": "ul. Traugutta 5 10-200 Wroclaw",
+      "email": "tomasz.kwasniewski@gmail.com",
+      "phoneNumber": "123-456-789",
+      "accountSet": [
+        {
+          "name": "Company",
+          "number": 95269671201762949389860200,
+          "amountMoney": 123456.50
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Scanner;
@@ -224,6 +227,8 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         }
         return accountsList;
     }
+
+
 
 
 }

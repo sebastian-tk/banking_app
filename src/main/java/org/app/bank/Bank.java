@@ -43,6 +43,9 @@ public class Bank {
      * @return new object Bank
      */
     public static Bank createBank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords){
+        if(fileNameBusinessCustomers == null || fileNameBusinessCustomers.isEmpty()){
+            throw new IllegalArgumentException("Invalid business customers file name when creating bank");
+        }
         if(fileNameCustomers == null || fileNameCustomers.isEmpty()){
             throw new IllegalArgumentException("Invalid customers file name when creating bank");
         }
@@ -170,10 +173,11 @@ public class Bank {
      * Method saves customers to file from customersMap
      */
     private void saveBusinessCustomers() {
-        customersJsonConverter.toJson(new CustomersList(customersMap
+        businessCustomersJsonConverter.toJson(new BusinessCustomerList(customersMap
                 .values()
                 .stream()
                 .filter(customer -> customer.getClass() == BusinessCustomer.class)
+                .map(customer -> (BusinessCustomer)customer)
                 .toList()));
     }
 
