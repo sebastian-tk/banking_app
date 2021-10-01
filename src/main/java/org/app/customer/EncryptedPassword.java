@@ -7,6 +7,7 @@ import lombok.ToString;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 
@@ -47,22 +48,35 @@ public class EncryptedPassword {
         return pesel;
     }
 
-    protected String getSalt(){
+    public String getSalt(){
         return divideExpression(password,SEPARATOR_HASH)[0];
     }
 
-    protected String getHashPassword(){
+    public String getHashPassword(){
         return divideExpression(password,SEPARATOR_HASH)[1];
     }
 
 
     /**
      *
+     * @return  String as hash, which  consist on = generated salt,SEPARATOR_HASH,hash's password
+     */
+    public static  String generateFullHash(char[] password){
+        if(password == null || password.length == 0){
+            throw new IllegalArgumentException("Invalid password argument when generate password hash");
+        }
+        byte[] salt = generateSalt();
+        String hashPassword = generatePasswordHash(password,salt);
+        clearPassword(password);
+        return mergeHash(salt,hashPassword);
+    }
+    /**
+     *
      * @param password array char as password
      * @param salt  array bytes
      * @return  String as hash password
      */
-    protected static String generatePasswordHash(char[] password, byte[] salt) {
+    public static String generatePasswordHash(char[] password, byte[] salt) {
         PBEKeySpec spec = null;
         char[] charsPassword = null;
         byte[] hashPassword;
@@ -87,7 +101,7 @@ public class EncryptedPassword {
      * @param password array chars
      *                 Method sets all chars to Character.MIN_VALUE
      */
-    protected static void clearPassword(char[] password){
+    public static void clearPassword(char[] password){
         Arrays.fill(password,Character.MIN_VALUE);
     }
 
@@ -96,7 +110,7 @@ public class EncryptedPassword {
      * @param password String as hash password
      * @return  true, if password is not correct, else flase
      */
-    protected static boolean isPasswordHashNotCorrect(String password){
+    public static boolean isPasswordHashNotCorrect(String password){
         if(password.matches("^\\w*:\\w*$")){
             int lengthSalt = BYTES_SALT_LENGTH * 2;
             String[] expressions =divideExpression(password,SEPARATOR_HASH);
@@ -110,7 +124,7 @@ public class EncryptedPassword {
      * @param expression String as expression to convert
      * @return  array chars from expression
      */
-    protected static char[] convertToChars(String expression){
+    public static char[] convertToChars(String expression){
         return expression.toCharArray();
     }
 
@@ -119,7 +133,7 @@ public class EncryptedPassword {
      * @param bytes array bytes
      * @return  String as formatted bytes hexadecimal  by pattern: width 2 , the result will be zero-padded
      */
-    protected static String bytesToHex(byte[] bytes){
+    public static String bytesToHex(byte[] bytes){
         StringBuilder strBui = new StringBuilder();
         for(var oneByte : bytes){
             strBui.append(String.format("%02X",oneByte));
@@ -132,7 +146,7 @@ public class EncryptedPassword {
      * @param expression String as expression to convert
      * @return  bytes array from expression
      */
-    protected static byte[] stringToBytes(String expression){
+    public static byte[] stringToBytes(String expression){
         if (expression == null || expression.isEmpty()) {
             throw new IllegalArgumentException("Invalid expression argument when convert to bytes");
         }
@@ -149,6 +163,16 @@ public class EncryptedPassword {
 
     /**
      *
+     * @return array bytes as random salt
+     */
+    private static byte[] generateSalt(){
+        SecureRandom secRand = new SecureRandom();
+        byte[] randomSalt = new byte[EncryptedPassword.BYTES_SALT_LENGTH];
+        secRand.nextBytes(randomSalt);
+        return randomSalt;
+    }
+    /**
+     *
      * @param expression String as expression to split
      * @param separator String as separator
      * @return array Strings from expression by separator
@@ -157,5 +181,14 @@ public class EncryptedPassword {
         return expression.split(separator);
     }
 
+    /**
+     *
+     * @param salt array byte
+     * @param encryptedPassword String as hash password
+     * @return  String as a complete encrypted hash
+     */
+    private static  String mergeHash(byte[] salt,String encryptedPassword){
+        return bytesToHex(salt)+EncryptedPassword.SEPARATOR_HASH+encryptedPassword;
+    }
 
 }

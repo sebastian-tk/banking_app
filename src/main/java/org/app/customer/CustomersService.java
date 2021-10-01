@@ -1,7 +1,12 @@
 package org.app.customer;
 
-import java.util.Map;
-import java.util.Scanner;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static org.app.customer.EncryptedPassword.*;
 
 public class CustomersService {
     private final Scanner scanner;
@@ -41,4 +46,158 @@ public class CustomersService {
         return mapCustomers;
     }
 
+    /**
+     * The method shows the main menu. Allows choosing login or customer registration
+     */
+    public void service(){
+        menuService();
+        switch (readChoice(generateNumber(1, 1))) {
+            case 1 -> registrationNewUser();
+            default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
+        }
+    }
+    /**
+     * The method supports account creation by selecting the appropriate account and user
+     */
+    private void registrationNewUser(){
+        menuRegistration();
+        int choice =readChoice(generateNumber(1,1));
+        switch(choice){
+            case 1-> {
+                serveAccount = Account.createAccount("Personal",getNewAccountNumber(),new BigDecimal("0"));
+                serveCustomer = new Customer(serveAccount);
+            }
+        }
+        String hashPassword = generateFullHash(convertToChars(readExpressionFromUser("enter password:")));
+        if(isUserExist(serveCustomer.getPesel())){
+            System.out.println("\t#User exist");
+        }else{
+            mapCustomers.put(serveCustomer.getPesel(), serveCustomer);
+            mapHashPasswords.put(serveCustomer.getPesel(), createEncryptedPassword(serveCustomer.getPesel(),hashPassword));
+            System.out.println("\t# Successful customer addition");
+
+        }
+    }
+
+    /**
+     *
+     * @param pesel object Pesel to find
+     * @return  true, if user with this number is in  mapCustomers, else false
+     */
+    private boolean isUserExist(Pesel pesel){
+        return  mapHashPasswords.containsKey(pesel) ;
+    }
+
+    /**
+     *
+     * @return Lits with Customers from mapCustomers
+     */
+    private List<Customer> getCustomers(){
+        return mapCustomers.values().stream().toList();
+    }
+    /**
+     *
+     * @return  BigInteger as new unique  number account among customers
+     */
+    private BigInteger getNewAccountNumber(){
+        List<BigInteger> listNumbersAccount = getListNumbersAccount(getCustomers());
+        BigInteger numberRandom;
+        do{
+            numberRandom = createNewNumber();
+        }while (listNumbersAccount.contains(numberRandom));
+        return numberRandom;
+    }
+    /**
+     *
+     * @return  new object BigInteger with random account number about length equals with static
+     *          variable LENGTH_NUMBER from Account class
+     */
+    private static BigInteger createNewNumber(){
+        String number = new Random()
+                .ints(Account.LENGTH_NUMBER,0,10)
+                .mapToObj(Integer::toString)
+                .collect(Collectors.joining());
+        return new BigInteger(number);
+    }
+    /**
+     *
+     * @param customers List<Customer>
+     * @return List with BigIntegers from customers map
+     */
+    private static List<BigInteger> getListNumbersAccount(List<Customer> customers){
+        return customers
+                .stream()
+                .map(customer -> customer.getAccountSet().stream().toList())
+                .flatMap(Collection::stream)
+                .map(Account::getNumber)
+                .toList();
+    }
+    /**
+     * Method prints menu to registration
+     */
+    private void menuRegistration(){
+        System.out.println("\t ****** REGISTRATION *******");
+        System.out.println("1. Personal account");
+        System.out.println("2. Company account");
+    }
+
+    /**
+     * Method prints menu to main service
+     */
+    private void menuService(){
+        System.out.println("\t ****** MENU *******");
+        System.out.println("1. Registration");
+        System.out.println("2. Login");
+    }
+    /**
+     *
+     * @param acceptableChoices List<Integer>
+     * @return integer value as an acceptable number selected by the user
+     */
+    private int readChoice(List<Integer> acceptableChoices){
+        int bufferChoice;
+        do{
+            System.out.print("choice: ");
+            while (!scanner.hasNextInt()){
+                System.out.println("\t#incorrect value");
+                scanner.nextLine();
+            }
+            bufferChoice = parseToInt(scanner.nextLine());
+            if(!acceptableChoices.contains(bufferChoice)){
+                System.out.println("\tThere is no such choice");
+                bufferChoice=0;
+            }
+        }while (bufferChoice==0);
+        return bufferChoice;
+    }
+
+    /**
+     * @param message String as message to user
+     * @return String as expression from user
+     */
+    private String readExpressionFromUser( String message) {
+        System.out.print(message);
+        return scanner.nextLine();
+    }
+
+    /**
+     *
+     * @param minRange minimum range
+     * @param maxRange maximum range
+     * @return  List<Integer> with numbers between minRange and maxRange
+     */
+    private List<Integer> generateNumber(int minRange, int maxRange){
+        if(minRange>maxRange){
+            throw new IllegalArgumentException("Invalid range arguments");
+        }
+        return IntStream.rangeClosed(minRange, maxRange).boxed().toList();
+    }
+    /**
+     *
+     * @param value String as value to parse
+     * @return  integer value as parsed integer from value
+     */
+    private int parseToInt(String value){
+        return Integer.parseInt(value);
+    }
 }
