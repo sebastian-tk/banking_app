@@ -45,9 +45,11 @@ public class App {
     public static void main(String[] args) {
         final String path = "src/main/java/org/app/data/";
         final String fileCustomers = "customers.json";
+        final String fileBusinessCustomers = "businessCustomers.json";
         final String filePasswords = "passwords.json";
+
         try{
-            Bank bank = createBank(path.concat(fileCustomers),path.concat(filePasswords));
+            Bank bank = createBank(path.concat(fileBusinessCustomers),path.concat(fileCustomers),path.concat(filePasswords));
             bank.service();
             bank.addCustomer(Customer.createCustomer(
                     "Jerzy",
