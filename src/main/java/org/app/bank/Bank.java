@@ -17,7 +17,7 @@ public class Bank {
     private CustomersJsonConverter customersJsonConverter;
     private CustomersService customersService;
 
-    private Bank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords) {
+    private Bank(String fileNameCustomers, String fileNameEncryptedPasswords) {
         customersMap = new HashMap<>();
         hashPasswordsMap = new HashMap<>();
 
@@ -36,17 +36,14 @@ public class Bank {
      * @param fileNameEncryptedPasswords String as file name with encrypted passwords
      * @return new object Bank
      */
-    public static Bank createBank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords){
-        if(fileNameBusinessCustomers == null || fileNameBusinessCustomers.isEmpty()){
-            throw new IllegalArgumentException("Invalid business customers file name when creating bank");
-        }
+    public static Bank createBank(String fileNameCustomers, String fileNameEncryptedPasswords){
         if(fileNameCustomers == null || fileNameCustomers.isEmpty()){
             throw new IllegalArgumentException("Invalid customers file name when creating bank");
         }
         if(fileNameEncryptedPasswords == null || fileNameEncryptedPasswords.isEmpty()){
             throw new IllegalArgumentException("Invalid passwords file name when creating bank");
         }
-        return new Bank(fileNameBusinessCustomers,fileNameCustomers, fileNameEncryptedPasswords);
+        return new Bank(fileNameCustomers, fileNameEncryptedPasswords);
     }
 
 
@@ -87,6 +84,38 @@ public class Bank {
                             HashMap::new
                     ));
         }
+    }
+
+    /**
+     * Method saves customersMap and hashPasswordsMap to .json files
+     */
+    private void saveData(){
+        saveCustomers();
+        saveEncryptedPasswords();
+    }
+
+    /**
+     * Method save customers to file from customersMap
+     */
+    private void saveCustomers(){
+        customersJsonConverter.toJson(new CustomersList(convertValuesToList(customersMap)));
+    }
+
+    /**
+     * Method save hashes passwords to file from hashPasswordsMap
+     */
+    private void saveEncryptedPasswords(){
+        encryptedPasswordsJsonConverter.toJson(new EncryptedPasswordsList(convertValuesToList(hashPasswordsMap)));
+    }
+
+    /**
+     *
+     * @param map Map with keys as Pesel and values of type T
+     * @param <T> type of values of Map
+     * @return List with objects of type T from map values
+     */
+    public static  <T> List<T> convertValuesToList(Map<Pesel,T> map){
+        return map.values().stream().toList();
     }
 
 }
