@@ -53,12 +53,13 @@ public class CustomersService {
      */
     public void service(){
         menuService();
-        switch (readChoice(generateNumber(1, 1))) {
+        switch (readChoice(generateNumber(1, 2))) {
             case 1 -> registrationNewUser();
-            case 2 -> serviceLogin();
+            case 2 -> serviceAccounts();
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
         }
     }
+
     /**
      * The method supports account creation by selecting the appropriate account and user
      */
@@ -83,18 +84,52 @@ public class CustomersService {
     }
 
     /**
-     * The method takes care of the account. The method logs the user in and then allows:
-     *
+     * The method performs the process of logging in and servicing the account. It calls the login () method,
+     *          if it is successful, it calls the service for a given customer
      */
-    private void serviceLogin(){
-        String peselBuffer = readDataFromUser( "pesel: ", dataFromUser -> !isPeselCorrect(dataFromUser));
-        serveCustomer = findCustomer(peselBuffer);
+    private void serviceAccounts(){
+        serveCustomer = login();
         if(serveCustomer != null){
-            Pesel peselRead = createPesel(peselBuffer);
-            serveCustomer.service(mapHashPasswords.get(peselRead).getHashPassword(),mapHashPasswords.get(peselRead).getSalt());
+            serveCustomer.service();
         }else{
-            System.out.println("\t#Customer does not exist ");
+            System.out.println("\t### ACCESS DENIED ###");
         }
+    }
+
+    /**
+     *
+     * @return  object Customer if successfully login, else null
+     */
+    private Customer login(){
+        final int NUMBER_LOGIN_ATTEMPTS = 3;
+        Customer customer = null;
+        boolean run=true;
+        int counter=0;
+        String bufferPesel;
+        char[] bufferPassword;
+        do{
+            System.out.println(" ---------- LOGIN USER ----------");
+            bufferPesel = readExpression("enter pesel: ");
+            if(isPeselCorrect(bufferPesel) && isUserExist(createPesel(bufferPesel))){
+                counter=0;
+                do{
+                    bufferPassword = convertToChars(readExpression("enter password: "));
+                    if(isPasswordCorrect(bufferPassword,bufferPesel)){
+                        System.out.println("\t Successful login  ;-)\n");
+                        customer = findCustomer(bufferPesel);
+                    }else{
+                        counter++;
+                        System.out.println("\t# Invalid password");
+                        run = (counter != NUMBER_LOGIN_ATTEMPTS);
+                    }
+                }while (run && customer==null);
+            }else {
+                counter++;
+                System.out.println("\t# Invalid number #");
+                run = (counter != NUMBER_LOGIN_ATTEMPTS);
+            }
+        }while (run && customer==null);
+        return customer;
     }
 
     /**
@@ -245,4 +280,36 @@ public class CustomersService {
         return buffer;
     }
 
+    /**
+     *
+     * @param password array chars as password
+     * @param pesel String as number
+     * @return  true, if password after has is equal with hash from file
+     */
+    private boolean isPasswordCorrect(char[] password,String pesel){
+        String hashPassword = generatePasswordHash(password, getSaltFromHash(pesel));
+        String hashBase = getPasswordHash(pesel);
+        return hashPassword.equals(hashBase);
+    }
+
+    /**
+     *
+     * @param pesel String as number
+     * @return  String as hash password
+     */
+    private String getPasswordHash(String pesel) {
+        return mapHashPasswords
+                .get(Pesel.createPesel(pesel))
+                .getHashPassword();
+    }
+    /**
+     *
+     * @param pesel String as number
+     * @return  array bytes as salt
+     */
+    private byte[] getSaltFromHash(String pesel) {
+        return mapHashPasswords
+                .get(Pesel.createPesel(pesel))
+                .getSalt();
+    }
 }

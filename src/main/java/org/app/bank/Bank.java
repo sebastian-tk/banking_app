@@ -46,6 +46,13 @@ public class Bank {
         return new Bank(fileNameCustomers, fileNameEncryptedPasswords);
     }
 
+    /**
+     * The method starts the customer service and then downloads the modified maps and saves them in a .json files
+     */
+    public void service(){
+        customersService.service();
+        updateData();
+    }
 
     /**
      * Method loads customersMap from fileNameCustomers file when file is not empty
@@ -84,6 +91,21 @@ public class Bank {
                             HashMap::new
                     ));
         }
+    }
+
+    /**
+     * All changes in the customer database are saved
+     */
+    private void updateData(){
+        downloadChanges();
+        saveData();
+    }
+    /**
+     * The method gets the customersMap update and the hashPasswordMap from the customerService
+     */
+    private void downloadChanges(){
+        customersMap = customersService.getMapCustomers();
+        hashPasswordsMap = customersService.getMapHashPasswords();
     }
 
     /**

@@ -93,15 +93,8 @@ public class Customer implements ValidatorPersonalData {
         return new Customer(name, surname, Pesel.createPesel(pesel), address, email, phoneNumber, accountSet);
     }
 
-    public void service(String hashPassword, byte[] salt) {
-        if (hashPassword == null || hashPassword.isEmpty()) {
-            throw new IllegalArgumentException("Invalid hashPassword argument in service");
-        }
-        if (salt == null || salt.length == 0) {
-            throw new IllegalArgumentException("Invalid salt argument in service");
-        }
+    public void service() {
         Scanner scanner = new Scanner(System.in);
-        if (login(hashPassword, salt)) {
             do {
                 Account serveAccount = getAccountToService(scanner);
                 menuAccount();
@@ -109,7 +102,7 @@ public class Customer implements ValidatorPersonalData {
                     case 1 -> balanceAccount(serveAccount);
                     case 2 -> {
                         boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                        System.out.println(answerWithdraw ? "\t#Not enough money" : "\t#Money withdrawn successfully;-)");
+                        System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
                     }
                     case 3 -> {
                         depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
@@ -119,34 +112,6 @@ public class Customer implements ValidatorPersonalData {
                 }
             } while (isYesOrNo("do you want to do any more activities"));
             System.out.println("\t\t### LOGOUT");
-        }
-    }
-
-    /**
-     * @param hashPassword String as hashPassword
-     * @param salt         array bytes as salt
-     * @return true if customer login was successful, false otherwise
-     */
-    private boolean login(String hashPassword, byte[] salt) {
-        final int NUMBER_LOGIN_ATTEMPTS = 3;
-        Scanner scanner = new Scanner(System.in);
-        boolean answer = false;
-        int counter = 0;
-        char[] bufferPassword;
-        do {
-            bufferPassword = convertToChars(readExpression(scanner, "enter password: "));
-            if (areEquals(hashPassword, EncryptedPassword.generatePasswordHash(bufferPassword, salt), String::equals)) {
-                System.out.println("\t Successful login  ;-)\n");
-                answer = true;
-            } else {
-                counter++;
-                System.out.println("\t# Invalid password");
-            }
-        } while (!answer && counter != NUMBER_LOGIN_ATTEMPTS);
-        if (counter == NUMBER_LOGIN_ATTEMPTS) {
-            System.out.println("\t### ACCESS DENIED ###");
-        }
-        return answer;
     }
 
     /**
