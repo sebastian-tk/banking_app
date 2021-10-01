@@ -1,6 +1,6 @@
 package org.app.customer;
 
- interface ValidatorPersonalData {
+ public interface ValidatorPersonalData {
     /**
      *
      * @param address String as address to check
