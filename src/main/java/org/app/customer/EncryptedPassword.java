@@ -48,11 +48,11 @@ public class EncryptedPassword {
         return pesel;
     }
 
-    public String getSalt(){
-        return divideExpression(password,SEPARATOR_HASH)[0];
+    protected byte[] getSalt(){
+        return stringToBytes(divideExpression(password,SEPARATOR_HASH)[0]);
     }
 
-    public String getHashPassword(){
+    protected String getHashPassword(){
         return divideExpression(password,SEPARATOR_HASH)[1];
     }
 

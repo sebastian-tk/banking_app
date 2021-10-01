@@ -94,6 +94,12 @@ public class Customer implements ValidatorPersonalData {
     }
 
     public void service(String hashPassword, byte[] salt) {
+        if (hashPassword == null || hashPassword.isEmpty()) {
+            throw new IllegalArgumentException("Invalid hashPassword argument in service");
+        }
+        if (salt == null || salt.length == 0) {
+            throw new IllegalArgumentException("Invalid salt argument in service");
+        }
         Scanner scanner = new Scanner(System.in);
         if (login(hashPassword, salt)) {
             do {
@@ -122,12 +128,6 @@ public class Customer implements ValidatorPersonalData {
      * @return true if customer login was successful, false otherwise
      */
     private boolean login(String hashPassword, byte[] salt) {
-        if (hashPassword == null || hashPassword.isEmpty()) {
-            throw new IllegalArgumentException("Invalid hashPassword argument in service");
-        }
-        if (salt == null || salt.length == 0) {
-            throw new IllegalArgumentException("Invalid salt argument in service");
-        }
         final int NUMBER_LOGIN_ATTEMPTS = 3;
         Scanner scanner = new Scanner(System.in);
         boolean answer = false;
@@ -202,14 +202,6 @@ public class Customer implements ValidatorPersonalData {
     }
 
     /**
-     * @param scanner object Scanner
-     * @return String as positive double value
-     */
-    private String readAmountMoney(Scanner scanner) {
-        return readDataFromUser(scanner, "amount money: ", Account::isDecimalNotPositiveValue);
-    }
-
-    /**
      * Method prints menu to service account
      */
     private void menuAccount() {
@@ -233,6 +225,85 @@ public class Customer implements ValidatorPersonalData {
         List<Account> accountList = printNumbersAccount();
         int nrAccount = readChoice(scanner, generateNumber(1, amountAccount));
         return accountList.get(nrAccount - 1);
+    }
+
+    /**
+     * @return List with Accounts from accountSet
+     */
+    private List<Account> convertAccountsToList() {
+        return accountSet.stream().toList();
+    }
+
+    /**
+     * @param scanner object Scanner to read data from user
+     *                Method loads subsequent fields of the Customer class except Account
+     */
+    private void init(Scanner scanner) {
+        this.name = readDataFromUser(scanner, "name: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
+        this.surname = readDataFromUser(scanner, "surname: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
+        this.pesel = Pesel.createPesel(readDataFromUser(scanner, "pesel: ", dataFromUser -> !Pesel.isPeselCorrect(dataFromUser)));
+        this.address = readDataFromUser(scanner, "address: ", ValidatorPersonalData::isAddressNotCorrect);
+        this.email = readDataFromUser(scanner, "email: ", ValidatorPersonalData::isEmailNotCorrect);
+        this.phoneNumber = readDataFromUser(scanner, "phoneNumber: ", ValidatorPersonalData::isNumberNotCorrect);
+    }
+
+    /**
+     * @param scanner           object Scanner
+     * @param acceptableChoices List<Integer>
+     * @return integer value as an acceptable number selected by the user
+     */
+    private int readChoice(Scanner scanner, List<Integer> acceptableChoices) {
+        int bufferChoice;
+        do {
+            System.out.print("choice: ");
+            while (!scanner.hasNextInt()) {
+                System.out.println("\t#incorrect value");
+                scanner.nextLine();
+            }
+            bufferChoice = parseToInt(scanner.nextLine());
+            if (!acceptableChoices.contains(bufferChoice)) {
+                System.out.println("\tThere is no such choice");
+                bufferChoice = 0;
+            }
+        } while (bufferChoice == 0);
+        return bufferChoice;
+    }
+
+    /**
+     * @param value String as value to parse
+     * @return integer value as parsed integer from value
+     */
+    private int parseToInt(String value) {
+        return Integer.parseInt(value);
+    }
+
+    /**
+     * @param scanner  object Scanner
+     * @param nameData String as name of data to read
+     * @param pred     interface Predicate
+     * @return correct String from user
+     */
+    private String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred) {
+        String buffer;
+        boolean run;
+        do {
+            buffer = readExpression(scanner, "enter " + nameData);
+            run = pred.test(buffer);
+            if (run) {
+                System.out.println("\t#Invalid " + nameData);
+            }
+        } while (run);
+        return buffer;
+    }
+
+    /**
+     * @param scanIn  object Scanner
+     * @param message String as message to user
+     * @return String as expression from user
+     */
+    private String readExpression(Scanner scanIn, String message) {
+        System.out.print(message);
+        return scanIn.nextLine();
     }
 
     /**
@@ -278,82 +349,11 @@ public class Customer implements ValidatorPersonalData {
     }
 
     /**
-     * @param scanner           object Scanner
-     * @param acceptableChoices List<Integer>
-     * @return integer value as an acceptable number selected by the user
+     * @param scanner object Scanner
+     * @return String as positive double value
      */
-    private int readChoice(Scanner scanner, List<Integer> acceptableChoices) {
-        int bufferChoice;
-        do {
-            System.out.print("choice: ");
-            while (!scanner.hasNextInt()) {
-                System.out.println("\t#incorrect value");
-                scanner.nextLine();
-            }
-            bufferChoice = parseToInt(scanner.nextLine());
-            if (!acceptableChoices.contains(bufferChoice)) {
-                System.out.println("\tThere is no such choice");
-                bufferChoice = 0;
-            }
-        } while (bufferChoice == 0);
-        return bufferChoice;
-    }
-
-    /**
-     * @param value String as value to parse
-     * @return integer value as parsed integer from value
-     */
-    private int parseToInt(String value) {
-        return Integer.parseInt(value);
-    }
-
-    /**
-     * @return List with Accounts from accountSet
-     */
-    private List<Account> convertAccountsToList() {
-        return accountSet.stream().toList();
-    }
-
-    /**
-     * @param scanner object Scanner to read data from user
-     *                Method loads subsequent fields of the Customer class except Account
-     */
-    private void init(Scanner scanner) {
-        this.name = readDataFromUser(scanner, "name: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
-        this.surname = readDataFromUser(scanner, "surname: ", ValidatorPersonalData::isNameOrSurnameNotCorrect);
-        this.pesel = Pesel.createPesel(readDataFromUser(scanner, "pesel: ", dataFromUser -> !Pesel.isPeselCorrect(dataFromUser)));
-        this.address = readDataFromUser(scanner, "address: ", ValidatorPersonalData::isAddressNotCorrect);
-        this.email = readDataFromUser(scanner, "email: ", ValidatorPersonalData::isEmailNotCorrect);
-        this.phoneNumber = readDataFromUser(scanner, "phoneNumber: ", ValidatorPersonalData::isNumberNotCorrect);
-    }
-
-    /**
-     * @param scanner  object Scanner
-     * @param nameData String as name of data to read
-     * @param pred     interface Predicate
-     * @return correct String from user
-     */
-    private String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred) {
-        String buffer;
-        boolean run;
-        do {
-            buffer = readExpression(scanner, "enter " + nameData);
-            run = pred.test(buffer);
-            if (run) {
-                System.out.println("\t#Invalid " + nameData);
-            }
-        } while (run);
-        return buffer;
-    }
-
-    /**
-     * @param scanIn  object Scanner
-     * @param message String as message to user
-     * @return String as expression from user
-     */
-    private String readExpression(Scanner scanIn, String message) {
-        System.out.print(message);
-        return scanIn.nextLine();
+    private String readAmountMoney(Scanner scanner) {
+        return readDataFromUser(scanner, "amount money: ", Account::isDecimalNotPositiveValue);
     }
 
     /**

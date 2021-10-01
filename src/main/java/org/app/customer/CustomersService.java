@@ -3,10 +3,12 @@ package org.app.customer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.app.customer.EncryptedPassword.*;
+import static org.app.customer.Pesel.*;
 
 public class CustomersService {
     private final Scanner scanner;
@@ -53,6 +55,7 @@ public class CustomersService {
         menuService();
         switch (readChoice(generateNumber(1, 1))) {
             case 1 -> registrationNewUser();
+            case 2 -> serviceLogin();
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
         }
     }
@@ -68,7 +71,7 @@ public class CustomersService {
                 serveCustomer = new Customer(serveAccount);
             }
         }
-        String hashPassword = generateFullHash(convertToChars(readExpressionFromUser("enter password:")));
+        String hashPassword = generateFullHash(convertToChars(readExpression("enter password:")));
         if(isUserExist(serveCustomer.getPesel())){
             System.out.println("\t#User exist");
         }else{
@@ -79,6 +82,29 @@ public class CustomersService {
         }
     }
 
+    /**
+     * The method takes care of the account. The method logs the user in and then allows:
+     *
+     */
+    private void serviceLogin(){
+        String peselBuffer = readDataFromUser( "pesel: ", dataFromUser -> !isPeselCorrect(dataFromUser));
+        serveCustomer = findCustomer(peselBuffer);
+        if(serveCustomer != null){
+            Pesel peselRead = createPesel(peselBuffer);
+            serveCustomer.service(mapHashPasswords.get(peselRead).getHashPassword(),mapHashPasswords.get(peselRead).getSalt());
+        }else{
+            System.out.println("\t#Customer does not exist ");
+        }
+    }
+
+    /**
+     *
+     * @param pesel String as number
+     * @return  object Customer assigned to the number number
+     */
+    private Customer findCustomer(String pesel){
+        return isUserExist(Pesel.createPesel(pesel)) ? mapCustomers.get(Pesel.createPesel(pesel)) : null;
+    }
     /**
      *
      * @param pesel object Pesel to find
@@ -92,7 +118,7 @@ public class CustomersService {
      *
      * @return Lits with Customers from mapCustomers
      */
-    private List<Customer> getCustomers(){
+    private List<Customer> getCustomersList(){
         return mapCustomers.values().stream().toList();
     }
     /**
@@ -100,7 +126,7 @@ public class CustomersService {
      * @return  BigInteger as new unique  number account among customers
      */
     private BigInteger getNewAccountNumber(){
-        List<BigInteger> listNumbersAccount = getListNumbersAccount(getCustomers());
+        List<BigInteger> listNumbersAccount = getListNumbersAccount(getCustomersList());
         BigInteger numberRandom;
         do{
             numberRandom = createNewNumber();
@@ -175,7 +201,7 @@ public class CustomersService {
      * @param message String as message to user
      * @return String as expression from user
      */
-    private String readExpressionFromUser( String message) {
+    private String readExpression(String message) {
         System.out.print(message);
         return scanner.nextLine();
     }
@@ -200,4 +226,23 @@ public class CustomersService {
     private int parseToInt(String value){
         return Integer.parseInt(value);
     }
+    /**
+     *
+     * @param nameData String as name of data to read
+     * @param pred     interface Predicate
+     * @return correct String from user
+     */
+    private String readDataFromUser( String nameData, Predicate<String> pred) {
+        String buffer;
+        boolean run;
+        do {
+            buffer = readExpression("enter " + nameData);
+            run = pred.test(buffer);
+            if (run) {
+                System.out.println("\t#Invalid " + nameData);
+            }
+        } while (run);
+        return buffer;
+    }
+
 }
