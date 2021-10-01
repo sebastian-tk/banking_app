@@ -55,6 +55,17 @@ public class Bank {
     }
 
     /**
+     *
+     * @param customer object Customer
+     * @param password  array chars as password
+     */
+    public void addCustomer(Customer customer,char[] password){
+        //arguments are checked in the ServiceCustomer class
+        customersService.add(customer,password);
+        updateData();
+    }
+
+    /**
      * Method loads customersMap from fileNameCustomers file when file is not empty
      */
     private void loadCustomersMap(){

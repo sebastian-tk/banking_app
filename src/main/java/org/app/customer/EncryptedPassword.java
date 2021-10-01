@@ -165,7 +165,7 @@ public class EncryptedPassword {
      *
      * @return array bytes as random salt
      */
-    private static byte[] generateSalt(){
+    public static byte[] generateSalt(){
         SecureRandom secRand = new SecureRandom();
         byte[] randomSalt = new byte[EncryptedPassword.BYTES_SALT_LENGTH];
         secRand.nextBytes(randomSalt);
@@ -187,7 +187,7 @@ public class EncryptedPassword {
      * @param encryptedPassword String as hash password
      * @return  String as a complete encrypted hash
      */
-    private static  String mergeHash(byte[] salt,String encryptedPassword){
+    public static  String mergeHash(byte[] salt,String encryptedPassword){
         return bytesToHex(salt)+EncryptedPassword.SEPARATOR_HASH+encryptedPassword;
     }
 

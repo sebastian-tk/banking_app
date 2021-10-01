@@ -40,6 +40,7 @@ public class CustomersService {
         }
         return new CustomersService(mapHashPasswords, customers);
     }
+
     public Map<Pesel, EncryptedPassword> getMapHashPasswords() {
         return mapHashPasswords;
     }
@@ -58,6 +59,27 @@ public class CustomersService {
             case 2 -> serviceAccounts();
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
         }
+    }
+
+
+    /**
+     *
+     * @param customer object Customer to add
+     * @param password array chars as password
+     *                 Method add new Customer to database
+     */
+    public void add(Customer customer,char[] password){
+        if(customer == null){
+            throw new IllegalArgumentException("Invalid customer argument when add");
+        }
+        if(areAccountsNotNumbersUnique(customer.getAccountSet()) || isUserExist(customer.getPesel())){
+            throw new IllegalArgumentException("Incorrect data of the user with the pesel number:" + customer.getPesel().getNumber()+". Data exist");
+        }
+        byte[] salt = generateSalt();
+        mapCustomers.put(customer.getPesel(), customer);
+        mapHashPasswords
+                .put(customer.getPesel(),createEncryptedPassword(customer.getPesel(), mergeHash(salt,generatePasswordHash(password,salt))));
+        clearPassword(password);
     }
 
     /**
@@ -311,5 +333,31 @@ public class CustomersService {
         return mapHashPasswords
                 .get(Pesel.createPesel(pesel))
                 .getSalt();
+    }
+    /**
+     *
+     * @param accountsSet Set with Accounts
+     * @return  true,if all numbers are not unique, else false
+     */
+    private boolean areAccountsNotNumbersUnique(Set<Account> accountsSet){
+        return accountsSet
+                .stream()
+                .anyMatch(account -> isNumberAccountExist(account.getNumber()));
+    }
+
+    /**
+     *
+     * @param number object BigInteger
+     * @return  true, if number account exist, else false
+     */
+    private boolean isNumberAccountExist(BigInteger number){
+        return   mapCustomers
+                .values()
+                .stream()
+                .map(Customer::getAccountSet)
+                .toList()
+                .stream()
+                .flatMap(Collection::stream)
+                .anyMatch(account -> account.getNumber().equals(number));
     }
 }

@@ -23,6 +23,45 @@
       ]
     },
     {
+      "name": "Jerzy",
+      "surname": "Lewandowski",
+      "pesel": {
+        "number": "75072796555"
+      },
+      "address": "ul. Konopnickiej 6 90-206 Luban",
+      "email": "jurek.lewy@onet.pl",
+      "phoneNumber": "699-105-354",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567888666777,
+          "amountMoney": 123.4
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890666666,
+          "amountMoney": 1550.5
+        }
+      ]
+    },
+    {
+      "name": "Wlodzimierz",
+      "surname": "Siwy",
+      "pesel": {
+        "number": "62041482678"
+      },
+      "address": "ul. Brudna 24 96-208 Rzeszow",
+      "email": "wlodek.siwy@wp.pl",
+      "phoneNumber": "795-200-304",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 90407824185633076281507771,
+          "amountMoney": 123.30
+        }
+      ]
+    },
+    {
       "name": "Zosia",
       "surname": "Kowalska",
       "pesel": {
@@ -36,40 +75,6 @@
           "name": "Personal",
           "number": 20220898532579531210710618,
           "amountMoney": 3000.0
-        }
-      ]
-    },
-    {
-      "name": "Magda",
-      "surname": "Lewandowska",
-      "pesel": {
-        "number": "75011451347"
-      },
-      "address": "ul. Woronicza 45 10-103 Warszawa",
-      "email": "magda.lewa@onet.pl",
-      "phoneNumber": "789-045-496",
-      "accountSet": [
-        {
-          "name": "personal",
-          "number": 12345678921234567890123456,
-          "amountMoney": 234.56
-        }
-      ]
-    },
-    {
-      "name": "Adam",
-      "surname": "Nowak",
-      "pesel": {
-        "number": "77102259742"
-      },
-      "address": "ul. Adama Mickiewicza 10/23 10-100 Warszawa",
-      "email": "adam.nowak@gmail.com",
-      "phoneNumber": "789-023-456",
-      "accountSet": [
-        {
-          "name": "personal",
-          "number": 12345678901234567890123456,
-          "amountMoney": 0
         }
       ]
     },
@@ -96,24 +101,36 @@
       ]
     },
     {
-      "name": "Roman",
-      "surname": "Mocny",
+      "name": "Adam",
+      "surname": "Nowak",
       "pesel": {
-        "number": "55072638875"
+        "number": "77102259742"
       },
-      "address": "ul. Krzywa 23/10 78-201 Czestochowa",
-      "email": "romek.mocny@wp.pl",
-      "phoneNumber": "798-206-394",
+      "address": "ul. Adama Mickiewicza 10/23 10-100 Warszawa",
+      "email": "adam.nowak@gmail.com",
+      "phoneNumber": "789-023-456",
       "accountSet": [
         {
           "name": "personal",
-          "number": 12345678901234567890234666,
-          "amountMoney": 650.5
-        },
+          "number": 12345678901234567890123456,
+          "amountMoney": 0
+        }
+      ]
+    },
+    {
+      "name": "Magda",
+      "surname": "Lewandowska",
+      "pesel": {
+        "number": "75011451347"
+      },
+      "address": "ul. Woronicza 45 10-103 Warszawa",
+      "email": "magda.lewa@onet.pl",
+      "phoneNumber": "789-045-496",
+      "accountSet": [
         {
           "name": "personal",
-          "number": 12345678901234567888823777,
-          "amountMoney": 12390.0
+          "number": 12345678921234567890123456,
+          "amountMoney": 234.56
         }
       ]
     },
@@ -136,6 +153,28 @@
           "name": "personal",
           "number": 12345678901234567890123555,
           "amountMoney": 1500.0
+        }
+      ]
+    },
+    {
+      "name": "Roman",
+      "surname": "Mocny",
+      "pesel": {
+        "number": "55072638875"
+      },
+      "address": "ul. Krzywa 23/10 78-201 Czestochowa",
+      "email": "romek.mocny@wp.pl",
+      "phoneNumber": "798-206-394",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890234666,
+          "amountMoney": 650.5
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567888823777,
+          "amountMoney": 12390.0
         }
       ]
     }

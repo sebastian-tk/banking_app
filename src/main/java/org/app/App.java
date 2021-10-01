@@ -1,8 +1,17 @@
 package org.app;
 
 import org.app.bank.Bank;
+import org.app.customer.Account;
+import org.app.customer.Customer;
+import org.app.customer.CustomersService;
+import org.app.customer.EncryptedPassword;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Set;
 
 import static org.app.bank.Bank.*;
+import static org.app.customer.EncryptedPassword.*;
 
 /*
     Napisz program, który pozwoli zaimplementować mechanizm obsługujący klienta w aplikacji bankowej. Bank posiada dwa
@@ -40,10 +49,22 @@ public class App {
         try{
             Bank bank = createBank(path.concat(fileCustomers),path.concat(filePasswords));
             bank.service();
-
+            bank.addCustomer(Customer.createCustomer(
+                    "Jerzy",
+                    "Lewandowski",
+                    "75072796555",
+                    "ul. Konopnickiej 6 90-206 Luban",
+                    "jurek.lewy@onet.pl",
+                    "699-105-354",
+                    Set.of(
+                            Account.createAccount("personal", new BigInteger("12345678901234567890666666"), new BigDecimal("1550.5")),
+                            Account.createAccount("personal", new BigInteger("12345678901234567888666777"), new BigDecimal("123.4"))
+                    )), convertToChars("jurek2")
+            );
         }catch (Exception e){
             System.out.println("error: "+e.getMessage());
         }
+        System.out.println(" ### BANK CLOSED ###");
     }
 }
 
