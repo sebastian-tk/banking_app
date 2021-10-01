@@ -3,6 +3,8 @@ package org.app.bank;
 import org.app.customer.*;
 import org.app.persistence.converter.CustomersJsonConverter;
 import org.app.persistence.converter.EncryptedPasswordsJsonConverter;
+import org.app.persistence.model.CustomersList;
+import org.app.persistence.model.EncryptedPasswordsList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +24,8 @@ public class Bank {
         encryptedPasswordsJsonConverter = new EncryptedPasswordsJsonConverter(fileNameEncryptedPasswords);
         customersJsonConverter = new CustomersJsonConverter(fileNameCustomers);
 
+        loadCustomersMap();
+        loadHashPasswords();
 
         customersService = CustomersService.createCustomersService(hashPasswordsMap,customersMap);
     }
@@ -45,6 +49,45 @@ public class Bank {
         return new Bank(fileNameBusinessCustomers,fileNameCustomers, fileNameEncryptedPasswords);
     }
 
+
+    /**
+     * Method loads customersMap from fileNameCustomers file when file is not empty
+     */
+    private void loadCustomersMap(){
+        var data = customersJsonConverter.fromJson();
+        if (data.isPresent()) {
+            customersMap = data
+                    .stream()
+                    .map(CustomersList::getCustomers)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toMap(
+                            Customer::getPesel,
+                            customer -> customer,
+                            (c1, c2) -> c1,
+                            HashMap::new
+                    ));
+        }
+    }
+
+    /**
+     *
+     * Method loads customersMap from fileNameCustomers file when file is not empty
+     */
+    private void loadHashPasswords() {
+        var data = encryptedPasswordsJsonConverter.fromJson();
+        if (data.isPresent()) {
+            hashPasswordsMap = data
+                    .stream()
+                    .map(EncryptedPasswordsList::getEncryptedPasswords)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toMap(
+                            EncryptedPassword::getPesel,
+                            hashPassword -> hashPassword,
+                            (c1, c2) -> c1,
+                            HashMap::new
+                    ));
+        }
+    }
 
 }
 
