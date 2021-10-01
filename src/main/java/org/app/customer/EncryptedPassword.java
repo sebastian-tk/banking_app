@@ -97,7 +97,7 @@ public class EncryptedPassword {
      * @return  true, if password is not correct, else flase
      */
     protected static boolean isPasswordHashNotCorrect(String password){
-        if(password.matches("^\\w:\\w$")){
+        if(password.matches("^\\w*:\\w*$")){
             int lengthSalt = BYTES_SALT_LENGTH * 2;
             String[] expressions =divideExpression(password,SEPARATOR_HASH);
             return expressions[0].length()!= lengthSalt || expressions[1].length() <lengthSalt;
