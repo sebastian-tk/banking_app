@@ -13,7 +13,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import static org.app.customer.EncryptedPassword.convertToChars;
+import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.ValidatorPersonalData.*;
 
 
@@ -25,7 +25,7 @@ import static org.app.customer.ValidatorPersonalData.*;
 @EqualsAndHashCode
 @ToString
 @Getter
-public class Customer implements ValidatorPersonalData {
+public class Customer implements ValidatorPersonalData,CustomerDataReaderProvider {
     private String name;
     private String surname;
     private Pesel pesel;
@@ -95,23 +95,23 @@ public class Customer implements ValidatorPersonalData {
 
     public void service() {
         Scanner scanner = new Scanner(System.in);
-            do {
-                Account serveAccount = getAccountToService(scanner);
-                menuAccount();
-                switch (readChoice(scanner, generateNumber(1, 3))) {
-                    case 1 -> balanceAccount(serveAccount);
-                    case 2 -> {
-                        boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                        System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
-                    }
-                    case 3 -> {
-                        depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                        System.out.println("\t#Money deposit successfully;-)");
-                    }
-                    default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
+        do {
+            Account serveAccount = getAccountToService(scanner);
+            menuAccount();
+            switch (readChoice(scanner, 3)) {
+                case 1 -> balanceAccount(serveAccount);
+                case 2 -> {
+                    boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                    System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
                 }
-            } while (isYesOrNo("do you want to do any more activities"));
-            System.out.println("\t\t### LOGOUT");
+                case 3 -> {
+                    depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                    System.out.println("\t#Money deposit successfully;-)");
+                }
+                default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
+            }
+        } while (isYesOrNo("do you want to do any more activities"));
+        System.out.println("\t\t### LOGOUT");
     }
 
     /**
@@ -188,7 +188,7 @@ public class Customer implements ValidatorPersonalData {
         }
         System.out.println("\t>>>Select an account");
         List<Account> accountList = printNumbersAccount();
-        int nrAccount = readChoice(scanner, generateNumber(1, amountAccount));
+        int nrAccount = readChoice(scanner,amountAccount);
         return accountList.get(nrAccount - 1);
     }
 
@@ -213,65 +213,6 @@ public class Customer implements ValidatorPersonalData {
     }
 
     /**
-     * @param scanner           object Scanner
-     * @param acceptableChoices List<Integer>
-     * @return integer value as an acceptable number selected by the user
-     */
-    private int readChoice(Scanner scanner, List<Integer> acceptableChoices) {
-        int bufferChoice;
-        do {
-            System.out.print("choice: ");
-            while (!scanner.hasNextInt()) {
-                System.out.println("\t#incorrect value");
-                scanner.nextLine();
-            }
-            bufferChoice = parseToInt(scanner.nextLine());
-            if (!acceptableChoices.contains(bufferChoice)) {
-                System.out.println("\tThere is no such choice");
-                bufferChoice = 0;
-            }
-        } while (bufferChoice == 0);
-        return bufferChoice;
-    }
-
-    /**
-     * @param value String as value to parse
-     * @return integer value as parsed integer from value
-     */
-    private int parseToInt(String value) {
-        return Integer.parseInt(value);
-    }
-
-    /**
-     * @param scanner  object Scanner
-     * @param nameData String as name of data to read
-     * @param pred     interface Predicate
-     * @return correct String from user
-     */
-    private String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred) {
-        String buffer;
-        boolean run;
-        do {
-            buffer = readExpression(scanner, "enter " + nameData);
-            run = pred.test(buffer);
-            if (run) {
-                System.out.println("\t#Invalid " + nameData);
-            }
-        } while (run);
-        return buffer;
-    }
-
-    /**
-     * @param scanIn  object Scanner
-     * @param message String as message to user
-     * @return String as expression from user
-     */
-    private String readExpression(Scanner scanIn, String message) {
-        System.out.print(message);
-        return scanIn.nextLine();
-    }
-
-    /**
      * @return List with Accounts this customer and print this numbers
      */
     private List<Account> printNumbersAccount() {
@@ -284,49 +225,5 @@ public class Customer implements ValidatorPersonalData {
         return accountsList;
     }
 
-    /**
-     * @param question String as question for user
-     * @return true, if user answered yes or false if user answered false
-     */
-    private boolean isYesOrNo(String question) {
-        Scanner scanner = new Scanner(System.in);
-        String buffer;
-        do {
-            buffer = readExpression(scanner, question + "(yes/no):");
-            if (!areEquals(buffer, "yes", String::equals) && !areEquals(buffer, "no", String::equals)) {
-                System.out.println("\t# Unavailable answer");
-                buffer = "";
-            }
-        } while (buffer.isEmpty());
-        return areEquals(buffer, "yes", String::equals);
-    }
 
-    /**
-     * @param minRange minimum range
-     * @param maxRange maximum range
-     * @return List<Integer> with numbers between minRange and maxRange
-     */
-    private List<Integer> generateNumber(int minRange, int maxRange) {
-        if (minRange > maxRange) {
-            throw new IllegalArgumentException("Invalid range arguments");
-        }
-        return IntStream.rangeClosed(minRange, maxRange).boxed().toList();
-    }
-
-    /**
-     * @param scanner object Scanner
-     * @return String as positive double value
-     */
-    private String readAmountMoney(Scanner scanner) {
-        return readDataFromUser(scanner, "amount money: ", Account::isDecimalNotPositiveValue);
-    }
-
-    /**
-     * @param firstObj  second object to compare
-     * @param secondObj first object to compare
-     * @return true, if firstObj is equal with secondObj, else false
-     */
-    private <T> boolean areEquals(T firstObj, T secondObj, BiPredicate<T, T> pred) {
-        return pred.test(firstObj, secondObj);
-    }
 }

@@ -2,13 +2,12 @@ package org.app.business_customer;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.app.customer.Account;
-import org.app.customer.Customer;
-import org.app.customer.Pesel;
-import org.app.customer.ValidatorPersonalData;
+import org.app.customer.*;
 
+import java.util.Scanner;
 import java.util.Set;
 
+import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.ValidatorPersonalData.*;
 
 
@@ -27,12 +26,21 @@ import static org.app.customer.ValidatorPersonalData.*;
  */
 @Getter
 @Setter
-public class BusinessCustomer extends Customer implements ValidatorPersonalData {
+public class BusinessCustomer extends Customer implements ValidatorPersonalData, CustomerDataReaderProvider {
     private String nameCompany;
     private String addressCompany;
     private String nip;
     private String regon;
 
+    public BusinessCustomer(Account accountNumber) {
+        super(accountNumber);
+        Scanner scanner = new Scanner(System.in);
+        this.nameCompany= readDataFromUser(scanner,"name company: ",this::isNameCompanyNotCorrect);
+        this.addressCompany = readDataFromUser(scanner,"address company: : ", ValidatorPersonalData::isAddressNotCorrect);
+        this.nip = readDataFromUser(scanner,"NIP: ",BusinessCustomer::isNipNotCorrect);
+        this.regon = readDataFromUser(scanner,"REGON: ",BusinessCustomer::isRegonNotCorrect);
+
+    }
 
     private BusinessCustomer(String name, String surname, Pesel pesel, String address, String email, String phoneNumber,
                                Set<Account> accountSet, String nameCompany, String addressCompany, String nip, String regon) {

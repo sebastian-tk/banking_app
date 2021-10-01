@@ -3,10 +3,10 @@ package org.app.customer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+
+import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.EncryptedPassword.*;
 import static org.app.customer.Pesel.*;
 
@@ -54,7 +54,7 @@ public class CustomersService {
      */
     public void service(){
         menuService();
-        switch (readChoice(generateNumber(1, 2))) {
+        switch (readChoice(scanner,2)) {
             case 1 -> registrationNewUser();
             case 2 -> serviceAccounts();
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
@@ -87,14 +87,14 @@ public class CustomersService {
      */
     private void registrationNewUser(){
         menuRegistration();
-        int choice =readChoice(generateNumber(1,1));
+        int choice = readChoice(scanner,1);
         switch(choice){
             case 1-> {
                 serveAccount = Account.createAccount("Personal",getNewAccountNumber(),new BigDecimal("0"));
                 serveCustomer = new Customer(serveAccount);
             }
         }
-        String hashPassword = generateFullHash(convertToChars(readExpression("enter password:")));
+        String hashPassword = generateFullHash(convertToChars(readExpression(scanner,"enter password:")));
         if(isUserExist(serveCustomer.getPesel())){
             System.out.println("\t#User exist");
         }else{
@@ -131,11 +131,11 @@ public class CustomersService {
         char[] bufferPassword;
         do{
             System.out.println(" ---------- LOGIN USER ----------");
-            bufferPesel = readExpression("enter pesel: ");
+            bufferPesel = readExpression(scanner,"enter pesel: ");
             if(isPeselCorrect(bufferPesel) && isUserExist(createPesel(bufferPesel))){
                 counter=0;
                 do{
-                    bufferPassword = convertToChars(readExpression("enter password: "));
+                    bufferPassword = convertToChars(readExpression(scanner,"enter password: "));
                     if(isPasswordCorrect(bufferPassword,bufferPesel)){
                         System.out.println("\t Successful login  ;-)\n");
                         customer = findCustomer(bufferPesel);
@@ -231,75 +231,6 @@ public class CustomersService {
         System.out.println("\t ****** MENU *******");
         System.out.println("1. Registration");
         System.out.println("2. Login");
-    }
-    /**
-     *
-     * @param acceptableChoices List<Integer>
-     * @return integer value as an acceptable number selected by the user
-     */
-    private int readChoice(List<Integer> acceptableChoices){
-        int bufferChoice;
-        do{
-            System.out.print("choice: ");
-            while (!scanner.hasNextInt()){
-                System.out.println("\t#incorrect value");
-                scanner.nextLine();
-            }
-            bufferChoice = parseToInt(scanner.nextLine());
-            if(!acceptableChoices.contains(bufferChoice)){
-                System.out.println("\tThere is no such choice");
-                bufferChoice=0;
-            }
-        }while (bufferChoice==0);
-        return bufferChoice;
-    }
-
-    /**
-     * @param message String as message to user
-     * @return String as expression from user
-     */
-    private String readExpression(String message) {
-        System.out.print(message);
-        return scanner.nextLine();
-    }
-
-    /**
-     *
-     * @param minRange minimum range
-     * @param maxRange maximum range
-     * @return  List<Integer> with numbers between minRange and maxRange
-     */
-    private List<Integer> generateNumber(int minRange, int maxRange){
-        if(minRange>maxRange){
-            throw new IllegalArgumentException("Invalid range arguments");
-        }
-        return IntStream.rangeClosed(minRange, maxRange).boxed().toList();
-    }
-    /**
-     *
-     * @param value String as value to parse
-     * @return  integer value as parsed integer from value
-     */
-    private int parseToInt(String value){
-        return Integer.parseInt(value);
-    }
-    /**
-     *
-     * @param nameData String as name of data to read
-     * @param pred     interface Predicate
-     * @return correct String from user
-     */
-    private String readDataFromUser( String nameData, Predicate<String> pred) {
-        String buffer;
-        boolean run;
-        do {
-            buffer = readExpression("enter " + nameData);
-            run = pred.test(buffer);
-            if (run) {
-                System.out.println("\t#Invalid " + nameData);
-            }
-        } while (run);
-        return buffer;
     }
 
     /**
