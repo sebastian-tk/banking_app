@@ -1,5 +1,6 @@
 package org.app.customer;
 
+import org.app.customer.transaction.Transaction;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,8 +54,10 @@ public class CustomersServiceAddTest {
         Customer customer = null;
         Map<Pesel,EncryptedPassword> mapHashPasswords = new HashMap<>(Map.of(peselObj,passwordObj));
         Map<Pesel,Customer> customerMap = new HashMap<>(Map.of(peselObj, testCustomer));
-        
-        CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords, customerMap);
+        Map<Pesel, List<Transaction>> transactionsMap = new HashMap<>();
+
+
+        CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords, customerMap,transactionsMap);
 
         assertThatThrownBy(()-> CustomersServiceTest.add(customer,passwordChars))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -65,10 +69,10 @@ public class CustomersServiceAddTest {
     public void test2(){
         Map<Pesel,EncryptedPassword> mapHashPasswords = new HashMap<>(Map.of(peselObj,passwordObj));
         Map<Pesel,Customer> customerMap = new HashMap<>(Map.of(peselObj, testCustomer));
-        
+        Map<Pesel, List<Transaction>> transactionsMap = new HashMap<>();
 
         CustomersService CustomersServiceTest = CustomersService
-                                                .createCustomersService(mapHashPasswords, customerMap);
+                                                .createCustomersService(mapHashPasswords, customerMap,transactionsMap);
 
         assertThatCode(()->CustomersServiceTest.add(addedCustomer,passwordChars)).doesNotThrowAnyException();
     }
@@ -78,9 +82,9 @@ public class CustomersServiceAddTest {
     public void test3(){
         Map<Pesel,EncryptedPassword> mapHashPasswords = new HashMap<>(Map.of(peselObj,passwordObj));
         Map<Pesel,Customer> customerMap = new HashMap<>(Map.of(peselObj, testCustomer));
-        
+        Map<Pesel, List<Transaction>> transactionsMap = new HashMap<>();
 
-        CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords,customerMap);
+        CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords,customerMap,transactionsMap);
 
         assertThatThrownBy(()->CustomersServiceTest.add(testCustomer,passwordChars))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -92,12 +96,12 @@ public class CustomersServiceAddTest {
     public void test4(){
         Map<Pesel,EncryptedPassword> mapHashPasswords = new HashMap<>(Map.of(peselObj,passwordObj));
         Map<Pesel,Customer> customerMap = new HashMap<>(Map.of(peselObj, testCustomer));
-        
+        Map<Pesel, List<Transaction>> transactionsMap = new HashMap<>();
 
         Map<Pesel,Customer> customerMapExpected = new HashMap<> (Map.copyOf(customerMap));
         customerMapExpected.put(peselAdded,addedCustomer);
 
-        CustomersService CustomersServiceTestExpected = CustomersService.createCustomersService(mapHashPasswords,customerMap);
+        CustomersService CustomersServiceTestExpected = CustomersService.createCustomersService(mapHashPasswords,customerMap,transactionsMap);
         CustomersServiceTestExpected.add(addedCustomer, passwordChars);
 
         assertEquals(customerMapExpected,CustomersServiceTestExpected.getMapCustomers());

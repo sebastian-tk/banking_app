@@ -1,6 +1,7 @@
 package org.app.customer;
 
 import org.app.business_customer.BusinessCustomer;
+import org.app.customer.transaction.Transaction;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,13 +17,15 @@ public class CustomersService {
     private final Scanner scanner;
     private Map<Pesel,EncryptedPassword> mapHashPasswords;
     private Map<Pesel,Customer> mapCustomers;
+    private Map<Pesel, List<Transaction>> mapTransactions;
     private Customer serveCustomer;
     private Account serveAccount;
 
 
-    private CustomersService(Map<Pesel,EncryptedPassword> mapHashPasswords, Map<Pesel,Customer>customers) {
+    private CustomersService(Map<Pesel,EncryptedPassword> mapHashPasswords, Map<Pesel,Customer>customers,Map<Pesel,List<Transaction>> mapTransactions) {
         this.mapHashPasswords = mapHashPasswords;
         this.mapCustomers = customers;
+        this.mapTransactions = mapTransactions;
         this.serveCustomer = null;
         this.serveAccount = null;
         this.scanner = new Scanner(System.in);
@@ -33,14 +36,17 @@ public class CustomersService {
      * @param customers     object Map<Pesel,Customer>
      * @return new object serviceCustomer
      */
-    public static CustomersService createCustomersService(Map<Pesel,EncryptedPassword> mapHashPasswords, Map<Pesel,Customer> customers) {
+    public static CustomersService createCustomersService(Map<Pesel,EncryptedPassword> mapHashPasswords, Map<Pesel,Customer> customers,Map<Pesel,List<Transaction>> transactionsHistory) {
         if (mapHashPasswords == null) {
             throw new IllegalArgumentException("Invalid mapHashPasswords argument");
         }
         if (customers == null ) {
             throw new IllegalArgumentException("Invalid customers argument");
         }
-        return new CustomersService(mapHashPasswords, customers);
+        if (transactionsHistory == null ) {
+            throw new IllegalArgumentException("Invalid map transactions argument");
+        }
+        return new CustomersService(mapHashPasswords, customers,transactionsHistory);
     }
 
     public Map<Pesel, EncryptedPassword> getMapHashPasswords() {
@@ -50,6 +56,8 @@ public class CustomersService {
     public Map<Pesel,Customer> getMapCustomers() {
         return mapCustomers;
     }
+
+    public Map<Pesel, List<Transaction>> getMapTransactions() {return mapTransactions;}
 
     /**
      * The method shows the main menu. Allows choosing login or customer registration
@@ -62,7 +70,6 @@ public class CustomersService {
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service of CustomerService");
         }
     }
-
 
     /**
      *
@@ -119,7 +126,8 @@ public class CustomersService {
     private void serviceAccounts(){
         serveCustomer = login();
         if(serveCustomer != null){
-            serveCustomer.service();
+            var updatedTransactions =serveCustomer.service(findTransactionsCustomer());
+            mapTransactions.put(serveCustomer.getPesel(), updatedTransactions);
         }else{
             System.out.println("\t### ACCESS DENIED ###");
         }
@@ -197,6 +205,16 @@ public class CustomersService {
         }while (listNumbersAccount.contains(numberRandom));
         return numberRandom;
     }
+
+    /**
+     *
+     * @return List with Transactions of serve customer
+     */
+    private List<Transaction> findTransactionsCustomer(){
+        var list =mapTransactions.get(serveCustomer.getPesel());
+        return   list == null ? new ArrayList<>() : list;
+    }
+
     /**
      *
      * @return  new object BigInteger with random account number about length equals with static
