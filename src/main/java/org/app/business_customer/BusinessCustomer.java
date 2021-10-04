@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.app.customer.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -27,6 +29,7 @@ import static org.app.customer.ValidatorPersonalData.*;
 @Getter
 @Setter
 public class BusinessCustomer extends Customer implements ValidatorPersonalData, CustomerDataReaderProvider {
+    private static final BigDecimal TAX_WITHDRAW = BigDecimal.valueOf(5.0);
     private String nameCompany;
     private String addressCompany;
     private String nip;
@@ -96,11 +99,28 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
         return new BusinessCustomer(name,surname,Pesel.createPesel(pesel),address,email,phoneNumber,accountSet,nameCompany,addressCompany,nip,regon);
     }
 
+    @Override
+    protected boolean withdrawMoney(BigDecimal moneyOut, Account account) {
+        boolean answerWithdraw =  super.withdrawMoney(moneyOut, account);
+        if(answerWithdraw){
+            super.withdrawMoney(calculateMoneyTax(moneyOut), account);
+        }
+        return answerWithdraw;
+    }
+
+    /**
+     *
+     * @param money object BigDecimal as money
+     * @return  BigDecimal as amount money from money calculated based TAX_WITHDRAW
+     */
+    private BigDecimal calculateMoneyTax(BigDecimal money){
+        return money.multiply(TAX_WITHDRAW.divide(BigDecimal.valueOf(100),2, RoundingMode.CEILING));
+    }
     /**
      * @param nip String as nip
      * @return true, if nip is not correct, else false
      */
-    public static boolean isNipNotCorrect(String nip) {
+    private static  boolean isNipNotCorrect(String nip) {
         int[] weights = { 6, 5, 7, 2, 3, 4, 5, 6, 7};
         return !nip.matches("[0-9]{10}") || isSumNotControlCorrect(nip,weights);
     }
@@ -108,7 +128,7 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
      * @param regon String as nip
      * @return true, if nip is not correct, else false
      */
-    public static boolean isRegonNotCorrect(String regon) {
+    private static boolean isRegonNotCorrect(String regon) {
         int[] weights = {8,9,2,3,4,5,6,7};
         return !regon.matches("[0-9]{9}") || isSumNotControlCorrect(regon,weights) || isProvinceNumberNotCorrect(regon);
     }
