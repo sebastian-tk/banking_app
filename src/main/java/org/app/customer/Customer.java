@@ -4,17 +4,17 @@ package org.app.customer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.app.customer.transaction.Transaction;
+import org.app.customer.transaction.TransactionType;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.function.BiPredicate;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
+import java.util.stream.Collectors;
 
 import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.ValidatorPersonalData.*;
@@ -96,25 +96,36 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         return new Customer(name, surname, Pesel.createPesel(pesel), address, email, phoneNumber, accountSet);
     }
 
-    public void service() {
+    public List<Transaction> service(List<Transaction> transactions) {
+        if(transactions == null){
+            throw new IllegalArgumentException("Invalid transactions argument in service of customer");
+        }
+        var mapTransactions = groupByAccount(transactions);
         Scanner scanner = new Scanner(System.in);
+        List<Transaction> transactionAccount;
+
         do {
             Account serveAccount = getAccountToService(scanner);
+            transactionAccount = getTransactionOfAccount(mapTransactions,serveAccount);
             menuAccount();
-            switch (readChoice(scanner, 3)) {
+            switch (readChoice(scanner, 4)) {
                 case 1 -> balanceAccount(serveAccount);
                 case 2 -> {
-                    boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                    System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
+                            boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                            System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
                 }
                 case 3 -> {
-                    depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                    System.out.println("\t#Money deposit successfully;-)");
+                            depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
+                            System.out.println("\t#Money deposit successfully;-)");
                 }
-                default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
+                case 4->    serviceHistorySearching(scanner,serveAccount,transactionAccount);
+                default ->  throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
             }
+            mapTransactions.put(serveAccount,transactionAccount);
         } while (isYesOrNo("do you want to do any more activities"));
         System.out.println("\t\t### LOGOUT");
+
+        return getAllTransactions(mapTransactions);
     }
 
     /**
@@ -159,7 +170,6 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         account.addMoney(nextMoney);
     }
 
-
     /**
      * @param moneyToWithdrawn object BigDecimal as money to withdraw
      * @param account          object Account to check account balance
@@ -178,6 +188,128 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         System.out.println("1. Check account balance");
         System.out.println("2. Withdraw money");
         System.out.println("3. Deposit money");
+        System.out.println("4. History transactions");
+    }
+
+    /**
+     *
+     * @param scanner object Scanner
+     * @param account   object Account to serve
+     * @param transactionsAccount   List with Transactions of account
+     *                              The method allows you to view and search the history of payments for a
+     *                              given account number.
+     */
+    private void serviceHistorySearching(Scanner scanner, Account account, List<Transaction> transactionsAccount){
+        menuSearching(account);
+        switch (readChoice(scanner, 3)) {
+            case 1 -> {
+                System.out.println("Enter date by pattern dd-MM-yyyy");
+                LocalDate readDate =parseDate(readDataFromUser(scanner, "date: ", this::isDateNotCorrect));
+                printByDate(transactionsAccount,transaction -> transaction.getDate().equals(readDate));
+            }
+            case 2 -> {
+                BigDecimal searchMoney = new BigDecimal(readAmountMoney(scanner));
+                printByDate(transactionsAccount,transaction ->  transaction
+                                                                .getMoney()
+                                                                .equals(searchMoney));
+            }
+            case 3 -> {
+                System.out.println("Enter type of transaction ");
+                String nameType =readDataFromUser(scanner, "type: ", TransactionType::isTypeNotCorrect);
+                printByDate(transactionsAccount,transaction -> transaction.getType().name().equals(nameType));
+            }
+            default -> throw new IllegalStateException("\t#Error-unacceptable choice in service history searching");
+        }
+    }
+
+    /**
+     * Method prints menu to searching history transactions
+     */
+    private void menuSearching(Account account) {
+        System.out.println("\t\t\t" + name + " " + surname);
+        System.out.println("\t **** HISTORY SEARCH MENU ****");
+        System.out.println("type: " +account.getName()+"\naccount: "+account.getNumber()+"\nbalance: "+account.getAmountMoney()+"zl");
+        System.out.println("\tSearch by: ");
+        System.out.println("1. date");
+        System.out.println("2. amount of money");
+        System.out.println("3. transaction type");
+    }
+
+    /**
+     *
+     * @param transactionsAccount List with Transactions
+     * @param pred  reference interface Predicate
+     *              Method prints data from transactionAccount according to pred
+     */
+    private void printByDate(List<Transaction> transactionsAccount,Predicate<Transaction> pred){
+        var transactionList = transactionsAccount
+                                            .stream()
+                                            .filter(pred)
+                                            .toList();
+        if (transactionList.isEmpty()) {
+            System.out.println("\t=>> No results ");
+        } else {
+            transactionList.forEach(System.out::println);
+        }
+    }
+
+    /**
+     *
+     * @param date String as date by pattern dd-MM-yyyy
+     * @return  true, if date is not correct, else false
+     */
+    private boolean isDateNotCorrect(String date){
+        try{
+            parseDate(date);
+            return false;
+        }catch (DateTimeParseException exc){
+            return true;
+        }
+    }
+
+    /**
+     *
+     * @param date String as date by pattern dd-MM-yyyy
+     * @return  object LocalDate with parsed date
+     */
+    private LocalDate parseDate(String date){
+        return LocalDate
+                .parse(date, DateTimeFormatter.ofPattern("dd-MM-uuuu")
+                        .withResolverStyle(ResolverStyle.STRICT));
+    }
+
+    /**
+     *
+     * @param transactionMap  object Map<Account,List<Transaction>>
+     * @param account object Account to find
+     * @return   List of account transactions
+     */
+    private List<Transaction> getTransactionOfAccount(Map<Account,List<Transaction>> transactionMap,Account account){
+        var transactions = transactionMap.get(account);
+        return transactions != null ? transactions : new ArrayList<>();
+    }
+    /**
+     *
+     * @param transactions List with Transactions
+     * @return  object Map<Account,List<Transaction>> , grouping by Account grom transactions
+     */
+    private Map<Account,List<Transaction>> groupByAccount(List<Transaction> transactions){
+        return   transactions
+                .stream()
+                .collect(Collectors.groupingBy(Transaction::getAccount));
+    }
+
+    /**
+     *
+     * @param transactionsMap object Map<Account,List<Transaction>>
+     * @return  List with all transactions from transactionsMap
+     */
+    private List<Transaction> getAllTransactions(Map<Account,List<Transaction>> transactionsMap){
+        return transactionsMap
+                .values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList();
     }
 
     /**
@@ -227,8 +359,5 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         }
         return accountsList;
     }
-
-
-
 
 }
