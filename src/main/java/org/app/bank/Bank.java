@@ -6,9 +6,11 @@ import org.app.customer.transaction.Transaction;
 import org.app.persistence.converter.BusinessCustomersJsonConverter;
 import org.app.persistence.converter.CustomersJsonConverter;
 import org.app.persistence.converter.EncryptedPasswordsJsonConverter;
+import org.app.persistence.converter.TransactionsJsonConverter;
 import org.app.persistence.model.BusinessCustomerList;
 import org.app.persistence.model.CustomersList;
 import org.app.persistence.model.EncryptedPasswordsList;
+import org.app.persistence.model.TransactionsList;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,9 +23,10 @@ public class Bank {
     private EncryptedPasswordsJsonConverter encryptedPasswordsJsonConverter;
     private CustomersJsonConverter customersJsonConverter;
     private BusinessCustomersJsonConverter businessCustomersJsonConverter;
+    private TransactionsJsonConverter transactionsJsonConverter;
     private CustomersService customersService;
 
-    private Bank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords) {
+    private Bank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords,String fileNameTransactions) {
         customersMap = new HashMap<>();
         hashPasswordsMap = new HashMap<>();
         transactionsMap = new HashMap<>();
@@ -31,21 +34,26 @@ public class Bank {
         encryptedPasswordsJsonConverter = new EncryptedPasswordsJsonConverter(fileNameEncryptedPasswords);
         customersJsonConverter = new CustomersJsonConverter(fileNameCustomers);
         businessCustomersJsonConverter = new BusinessCustomersJsonConverter(fileNameBusinessCustomers);
+        transactionsJsonConverter = new TransactionsJsonConverter(fileNameTransactions);
 
         loadCustomersToMap();
         loadBusinessCustomersToMap();
         loadHashPasswords();
+        loadTransactionsToMap();
 
         customersService = CustomersService.createCustomersService(hashPasswordsMap,customersMap,transactionsMap);
     }
 
     /**
      *
+     *
+     * @param fileNameBusinessCustomers String as file name with business customers
      * @param fileNameCustomers String as file name with customers
      * @param fileNameEncryptedPasswords String as file name with encrypted passwords
+     * @param fileNameTransactions String as the name of the customers transaction history file
      * @return new object Bank
      */
-    public static Bank createBank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords){
+    public static Bank createBank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords,String fileNameTransactions){
         if(fileNameBusinessCustomers == null || fileNameBusinessCustomers.isEmpty()){
             throw new IllegalArgumentException("Invalid business customers file name when creating bank");
         }
@@ -55,7 +63,10 @@ public class Bank {
         if(fileNameEncryptedPasswords == null || fileNameEncryptedPasswords.isEmpty()){
             throw new IllegalArgumentException("Invalid passwords file name when creating bank");
         }
-        return new Bank(fileNameBusinessCustomers,fileNameCustomers, fileNameEncryptedPasswords);
+        if(fileNameTransactions == null || fileNameTransactions.isEmpty()){
+            throw new IllegalArgumentException("Invalid transactions file name when creating bank");
+        }
+        return new Bank(fileNameBusinessCustomers,fileNameCustomers, fileNameEncryptedPasswords,fileNameTransactions);
     }
 
     /**
@@ -117,6 +128,20 @@ public class Bank {
         }
     }
     /**
+     * Method loads transactions to transactionsMap from fileNameTransactions file when file is not empty
+     */
+    private void loadTransactionsToMap(){
+        var data = transactionsJsonConverter.fromJson();
+        if (data.isPresent()) {
+            var transactions = data
+                    .stream()
+                    .map(TransactionsList::getTransactions)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.groupingBy(Transaction::getPesel));
+            transactionsMap.putAll(transactions);
+        }
+    }
+    /**
      *
      * Method loads customersMap from fileNameCustomers file when file is not empty
      */
@@ -136,6 +161,7 @@ public class Bank {
         }
     }
 
+
     /**
      * All changes in the customer database are saved
      */
@@ -149,6 +175,7 @@ public class Bank {
     private void downloadChanges(){
         customersMap = customersService.getMapCustomers();
         hashPasswordsMap = customersService.getMapHashPasswords();
+        transactionsMap = customersService.getMapTransactions();
     }
 
     /**
@@ -158,6 +185,7 @@ public class Bank {
         saveCustomers();
         saveBusinessCustomers();
         saveEncryptedPasswords();
+        saveTransactions();
     }
 
     /**
@@ -189,6 +217,17 @@ public class Bank {
      */
     private void saveEncryptedPasswords(){
         encryptedPasswordsJsonConverter.toJson(new EncryptedPasswordsList(convertValuesToList(hashPasswordsMap)));
+    }
+
+    /**
+     * Method saves customers to file from customersMap
+     */
+    private void saveTransactions() {
+        transactionsJsonConverter.toJson(new TransactionsList(transactionsMap
+                                                                .values()
+                                                                .stream()
+                                                                .flatMap(Collection::stream)
+                                                                .toList()));
     }
 
     /**

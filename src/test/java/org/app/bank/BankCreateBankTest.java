@@ -1,5 +1,6 @@
 package org.app.bank;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -7,16 +8,27 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class BankCreateBankTest {
-    private static final String path = "src/main/java/org/app/data/";
+    private static String path;
+    private static String correctFileNameCustomers;
+    private static String correctFileNameBusinessCustomers;
+    private static String correctFileNamePasswords;
+    private static String correctFileNameTransactions;
 
+    @BeforeAll
+    public static void initName(){
+        path = "src/main/java/org/app/data/";
+        correctFileNameCustomers = "customers.json";
+        correctFileNameBusinessCustomers = "businessCustomers.json";
+        correctFileNamePasswords = "passwords.json";
+        correctFileNameTransactions = "transactionsHistory.json";
+
+    }
     @Test
     @DisplayName("should throw IllegalArgumentException when customers filename is null")
     public void test1(){
-        String fileCustomers = null;
-        String fileBusinessCustomers = "businessCustomers.json";
-        String filePasswords = "passwords.json";
+        String fileNameCustomersTest = null;
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,fileNameCustomersTest,correctFileNamePasswords,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid customers file name when creating bank");
     }
@@ -24,11 +36,9 @@ public class BankCreateBankTest {
     @Test
     @DisplayName("should throw IllegalArgumentException when customers filename is empty")
     public void test2(){
-        String fileCustomers = "";
-        String fileBusinessCustomers = "businessCustomers.json";
-        String filePasswords = "passwords.json";
+        String fileNameCustomersTest = null;
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,fileNameCustomersTest,correctFileNamePasswords,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid customers file name when creating bank");
     }
@@ -36,11 +46,9 @@ public class BankCreateBankTest {
     @Test
     @DisplayName("should throw IllegalArgumentException when passwords filename is null")
     public void test3(){
-        String fileCustomers = "customers.json";
-        String fileBusinessCustomers = "businessCustomers.json";
-        String filePasswords = null;
+        String fileNamePasswordsTest = null;
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,correctFileNameCustomers,fileNamePasswordsTest,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid passwords file name when creating bank");
     }
@@ -48,11 +56,9 @@ public class BankCreateBankTest {
     @Test
     @DisplayName("should throw IllegalArgumentException when customers filename is empty")
     public void test4(){
-        String fileCustomers = "customers.json";
-        String fileBusinessCustomers = "businessCustomers.json";
-        String filePasswords = "";
+        String fileNamePasswordsTest = "";
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,correctFileNameCustomers,fileNamePasswordsTest,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid passwords file name when creating bank");
     }
@@ -60,22 +66,22 @@ public class BankCreateBankTest {
     @Test
     @DisplayName("should no throw when arguments are correct")
     public void test5(){
-        String fileCustomers = path.concat("customers.json");
-        String fileBusinessCustomers = path.concat("businessCustomers.json");
-        String filePasswords = path.concat("passwords.json");
+        String fullPathFileCustomers = path.concat(correctFileNameCustomers);
+        String fullPathFileBusinessCustomers = path.concat(correctFileNameBusinessCustomers);
+        String fullPathFilePasswords = path.concat(correctFileNamePasswords);
+        String fullPathFileTransactions = path.concat(correctFileNameTransactions);
 
-
-        assertThatCode(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords)).doesNotThrowAnyException();
+        assertThatCode(()-> Bank
+                .createBank(fullPathFileBusinessCustomers,fullPathFileCustomers,fullPathFilePasswords,fullPathFileTransactions))
+                .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("should throw IllegalArgumentException when businessCustomers filename is null")
     public void test6(){
-        String fileCustomers = "customers.json";
-        String fileBusinessCustomers = null;
-        String filePasswords = "password.json";
+        String fileNameBusinessCustomersTest = null;
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(fileNameBusinessCustomersTest,correctFileNameCustomers,correctFileNamePasswords,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid business customers file name when creating bank");
     }
@@ -83,14 +89,30 @@ public class BankCreateBankTest {
     @Test
     @DisplayName("should throw IllegalArgumentException when businessCustomers filename is empty")
     public void test7(){
-        String fileCustomers = "customers.json";
-        String fileBusinessCustomers = "";
-        String filePasswords = "password.json";
+        String fileNameBusinessCustomersTest = "";
 
-        assertThatThrownBy(()-> Bank.createBank(fileBusinessCustomers,fileCustomers,filePasswords))
+        assertThatThrownBy(()-> Bank.createBank(fileNameBusinessCustomersTest,correctFileNameCustomers,correctFileNamePasswords,correctFileNameTransactions))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid business customers file name when creating bank");
     }
 
+    @Test
+    @DisplayName("should throw IllegalArgumentException when transactions filename is null")
+    public void test8(){
+        String fileNameTransactionsTest = null;
 
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,correctFileNameCustomers,correctFileNamePasswords,fileNameTransactionsTest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid transactions file name when creating bank");
+    }
+
+    @Test
+    @DisplayName("should throw IllegalArgumentException when transactions filename is empty")
+    public void test9(){
+        String fileNameTransactionsTest = "";
+
+        assertThatThrownBy(()-> Bank.createBank(correctFileNameBusinessCustomers,correctFileNameCustomers,correctFileNamePasswords,fileNameTransactionsTest))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid transactions file name when creating bank");
+    }
 }
