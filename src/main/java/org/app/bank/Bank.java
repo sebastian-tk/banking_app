@@ -2,6 +2,7 @@ package org.app.bank;
 
 import org.app.business_customer.BusinessCustomer;
 import org.app.customer.*;
+import org.app.customer.transaction.Transaction;
 import org.app.persistence.converter.BusinessCustomersJsonConverter;
 import org.app.persistence.converter.CustomersJsonConverter;
 import org.app.persistence.converter.EncryptedPasswordsJsonConverter;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class Bank {
     private Map<Pesel, Customer> customersMap;
     private Map<Pesel, EncryptedPassword> hashPasswordsMap;
+    private Map<Pesel, List<Transaction>> transactionsMap;
 
     private EncryptedPasswordsJsonConverter encryptedPasswordsJsonConverter;
     private CustomersJsonConverter customersJsonConverter;
@@ -24,6 +26,7 @@ public class Bank {
     private Bank(String fileNameBusinessCustomers,String fileNameCustomers, String fileNameEncryptedPasswords) {
         customersMap = new HashMap<>();
         hashPasswordsMap = new HashMap<>();
+        transactionsMap = new HashMap<>();
 
         encryptedPasswordsJsonConverter = new EncryptedPasswordsJsonConverter(fileNameEncryptedPasswords);
         customersJsonConverter = new CustomersJsonConverter(fileNameCustomers);
@@ -33,7 +36,7 @@ public class Bank {
         loadBusinessCustomersToMap();
         loadHashPasswords();
 
-        customersService = CustomersService.createCustomersService(hashPasswordsMap,customersMap);
+        customersService = CustomersService.createCustomersService(hashPasswordsMap,customersMap,transactionsMap);
     }
 
     /**

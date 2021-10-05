@@ -26,7 +26,6 @@ import static org.app.customer.ValidatorPersonalData.*;
     przez nazwę, unikalny numer oraz przez ilość środków, które na nich się znajdują.
  */
 @EqualsAndHashCode
-@ToString
 @Getter
 public class Customer implements ValidatorPersonalData,CustomerDataReaderProvider {
     private String name;
@@ -96,6 +95,13 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         return new Customer(name, surname, Pesel.createPesel(pesel), address, email, phoneNumber, accountSet);
     }
 
+    @Override
+    public String toString() {
+        return  "\n\t\t\t\t" + name + " " + surname + "\n"+
+                "\t\t\t\t" +(this.getClass().getSimpleName());
+
+    }
+
     public List<Transaction> service(List<Transaction> transactions) {
         if(transactions == null){
             throw new IllegalArgumentException("Invalid transactions argument in service of customer");
@@ -107,7 +113,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         do {
             Account serveAccount = getAccountToService(scanner);
             transactionAccount = getTransactionOfAccount(mapTransactions,serveAccount);
-            menuAccount();
+            menuAccount(serveAccount);
             switch (readChoice(scanner, 4)) {
                 case 1 -> balanceAccount(serveAccount);
                 case 2 -> {
@@ -118,7 +124,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                             depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
                             System.out.println("\t#Money deposit successfully;-)");
                 }
-                case 4->    serviceHistorySearching(scanner,serveAccount,transactionAccount);
+                case 4->    serviceHistorySearching(scanner,transactionAccount);
                 default ->  throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
             }
             mapTransactions.put(serveAccount,transactionAccount);
@@ -180,10 +186,13 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
     }
 
     /**
-     * Method prints menu to service account
+     *
+     * @param account   object Account to serve
+     *                   Method prints menu to service account
      */
-    private void menuAccount() {
-        System.out.println("\t\t\t" + name + " " + surname);
+    private void menuAccount(Account account) {
+        System.out.println(this);
+        System.out.println("account: "+account.getNumber());
         System.out.println("\t ****** MENU ACCOUNT *******");
         System.out.println("1. Check account balance");
         System.out.println("2. Withdraw money");
@@ -194,14 +203,13 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
     /**
      *
      * @param scanner object Scanner
-     * @param account   object Account to serve
      * @param transactionsAccount   List with Transactions of account
      *                              The method allows you to view and search the history of payments for a
      *                              given account number.
      */
-    private void serviceHistorySearching(Scanner scanner, Account account, List<Transaction> transactionsAccount){
-        menuSearching(account);
-        switch (readChoice(scanner, 3)) {
+    private void serviceHistorySearching(Scanner scanner, List<Transaction> transactionsAccount){
+        menuSearching();
+        switch (readChoice(scanner, 4)) {
             case 1 -> {
                 System.out.println("Enter date by pattern dd-MM-yyyy");
                 LocalDate readDate =parseDate(readDataFromUser(scanner, "date: ", this::isDateNotCorrect));
@@ -218,6 +226,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                 String nameType =readDataFromUser(scanner, "type: ", TransactionType::isTypeNotCorrect);
                 printByDate(transactionsAccount,transaction -> transaction.getType().name().equals(nameType));
             }
+            case 4 ->  printByDate(transactionsAccount,transaction -> true);
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service history searching");
         }
     }
@@ -225,14 +234,14 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
     /**
      * Method prints menu to searching history transactions
      */
-    private void menuSearching(Account account) {
-        System.out.println("\t\t\t" + name + " " + surname);
-        System.out.println("\t **** HISTORY SEARCH MENU ****");
-        System.out.println("type: " +account.getName()+"\naccount: "+account.getNumber()+"\nbalance: "+account.getAmountMoney()+"zl");
-        System.out.println("\tSearch by: ");
-        System.out.println("1. date");
-        System.out.println("2. amount of money");
-        System.out.println("3. transaction type");
+    private void menuSearching() {
+        System.out.println(this);
+        System.out.println("**** HISTORY SEARCH MENU ****");
+        System.out.println(" Search by: ");
+        System.out.println(" 1. date");
+        System.out.println(" 2. amount of money");
+        System.out.println(" 3. transaction type");
+        System.out.println(" 4. all transactions");
     }
 
     /**
