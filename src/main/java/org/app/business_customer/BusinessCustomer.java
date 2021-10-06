@@ -3,9 +3,12 @@ package org.app.business_customer;
 import lombok.Getter;
 import lombok.Setter;
 import org.app.customer.*;
+import org.app.customer.transaction.Transaction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -30,10 +33,14 @@ import static org.app.customer.ValidatorPersonalData.*;
 @Setter
 public class BusinessCustomer extends Customer implements ValidatorPersonalData, CustomerDataReaderProvider {
     private static final BigDecimal TAX_WITHDRAW = BigDecimal.valueOf(5.0);
+    private static final int NUMBER_PAYMENTS_PER_MONTH = 3;
+    private static final BigDecimal TAX_DEPOSIT = BigDecimal.valueOf(3.0);
+
     private String nameCompany;
     private String addressCompany;
     private String nip;
     private String regon;
+    private transient boolean taxDepositToPay;
 
     public BusinessCustomer(Account accountNumber) {
         super(accountNumber);
@@ -42,7 +49,7 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
         this.addressCompany = readDataFromUser(scanner,"address company: : ", ValidatorPersonalData::isAddressNotCorrect);
         this.nip = readDataFromUser(scanner,"NIP: ",BusinessCustomer::isNipNotCorrect);
         this.regon = readDataFromUser(scanner,"REGON: ",BusinessCustomer::isRegonNotCorrect);
-
+        this.taxDepositToPay=false;
     }
 
     private BusinessCustomer(String name, String surname, Pesel pesel, String address, String email, String phoneNumber,
@@ -52,6 +59,7 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
         this.addressCompany = addressCompany;
         this.nip = nip;
         this.regon = regon;
+        this.taxDepositToPay=false;
     }
 
     /**
@@ -103,18 +111,44 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
     protected boolean withdrawMoney(BigDecimal moneyOut, Account account) {
         boolean answerWithdraw =  super.withdrawMoney(moneyOut, account);
         if(answerWithdraw){
-            super.withdrawMoney(calculateMoneyTax(moneyOut), account);
+            super.withdrawMoney(calculateMoneyTax(moneyOut,TAX_WITHDRAW), account);
         }
         return answerWithdraw;
+    }
+    @Override
+    protected void serviceDeposit(Scanner scanner, Account serveAccount, List<Transaction> transactionAccount) {
+        super.serviceDeposit(scanner, serveAccount, transactionAccount);
+        taxDepositToPay = countTransactionsInCurrentMonth(transactionAccount) > NUMBER_PAYMENTS_PER_MONTH;
+    }
+
+    @Override
+    protected void depositMoney(BigDecimal nextMoney, Account account) {
+        super.depositMoney(nextMoney, account);
+        if(taxDepositToPay){
+            super.depositMoney(calculateMoneyTax(nextMoney,TAX_DEPOSIT), account);
+        }
     }
 
     /**
      *
-     * @param money object BigDecimal as money
-     * @return  BigDecimal as amount money from money calculated based TAX_WITHDRAW
+     * @param transactionAccount List with transactions
+     * @return  long value as amount of transactions in this month
      */
-    private BigDecimal calculateMoneyTax(BigDecimal money){
-        return money.multiply(TAX_WITHDRAW.divide(BigDecimal.valueOf(100),2, RoundingMode.CEILING));
+    private long countTransactionsInCurrentMonth(List<Transaction> transactionAccount){
+        LocalDate currentDate = LocalDate.now();
+        return transactionAccount
+                .stream()
+                .filter(transaction -> getMonth(transaction.getDate()) == currentDate.getMonthValue())
+                .count();
+    }
+    /**
+     *
+     * @param money object BigDecimal as money
+     * @param tax object BigDecimal as tax
+     * @return  BigDecimal as amount money from money calculated based tax
+     */
+    private BigDecimal calculateMoneyTax(BigDecimal money,BigDecimal tax){
+        return money.multiply(tax.divide(BigDecimal.valueOf(100),2, RoundingMode.CEILING));
     }
     /**
      * @param nip String as nip
@@ -171,4 +205,15 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
         return !expression.matches("^[a-zA-Z]{2,}$");
     }
 
+    /**
+     *
+     * @param date String as date
+     * @return  integer value as number of month from date
+     */
+    private int getMonth(String date){
+        if(Transaction.isDateNotCorrect(date)){
+            throw new IllegalArgumentException("Invalid date syntax when het month");
+        }
+        return Transaction.parseDate(date).getMonthValue();
+    }
 }

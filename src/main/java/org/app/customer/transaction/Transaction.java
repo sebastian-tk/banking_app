@@ -63,13 +63,21 @@ public class Transaction {
      */
     public static boolean isDateNotCorrect(String date){
         try{
-            LocalDate
-                    .parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd")
-                            .withResolverStyle(ResolverStyle.STRICT));
+            parseDate(date);
             return false;
         }catch (DateTimeParseException exc){
             return true;
         }
+    }
+    /**
+     *
+     * @param date String as date by pattern yyyy-MM-dd
+     * @return  true, if date is not correct, else false
+     */
+    public static LocalDate parseDate(String date){
+           return LocalDate
+                    .parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd")
+                            .withResolverStyle(ResolverStyle.STRICT));
     }
 
     @Override
