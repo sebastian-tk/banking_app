@@ -3,15 +3,10 @@ package org.app.customer;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 import org.app.customer.transaction.Transaction;
 import org.app.customer.transaction.TransactionType;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -211,8 +206,8 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         menuSearching();
         switch (readChoice(scanner, 4)) {
             case 1 -> {
-                System.out.println("Enter date by pattern dd-MM-yyyy");
-                LocalDate readDate =parseDate(readDataFromUser(scanner, "date: ", this::isDateNotCorrect));
+                System.out.println("Enter date by pattern yyyy-MM-dd");
+                String readDate =readDataFromUser(scanner, "date: ", Transaction::isDateNotCorrect);
                 printByDate(transactionsAccount,transaction -> transaction.getDate().equals(readDate));
             }
             case 2 -> {
@@ -226,7 +221,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                 String nameType =readDataFromUser(scanner, "type: ", TransactionType::isTypeNotCorrect);
                 printByDate(transactionsAccount,transaction -> transaction.getType().name().equals(nameType));
             }
-            case 4 ->  printByDate(transactionsAccount,transaction -> true);
+            case 4 -> printByDate(transactionsAccount,transaction -> true);
             default -> throw new IllegalStateException("\t#Error-unacceptable choice in service history searching");
         }
     }
@@ -260,31 +255,6 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         } else {
             transactionList.forEach(System.out::println);
         }
-    }
-
-    /**
-     *
-     * @param date String as date by pattern dd-MM-yyyy
-     * @return  true, if date is not correct, else false
-     */
-    private boolean isDateNotCorrect(String date){
-        try{
-            parseDate(date);
-            return false;
-        }catch (DateTimeParseException exc){
-            return true;
-        }
-    }
-
-    /**
-     *
-     * @param date String as date by pattern dd-MM-yyyy
-     * @return  object LocalDate with parsed date
-     */
-    private LocalDate parseDate(String date){
-        return LocalDate
-                .parse(date, DateTimeFormatter.ofPattern("dd-MM-uuuu")
-                        .withResolverStyle(ResolverStyle.STRICT));
     }
 
     /**

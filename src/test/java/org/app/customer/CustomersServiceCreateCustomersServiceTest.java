@@ -83,10 +83,11 @@ public class CustomersServiceCreateCustomersServiceTest {
     public void test4() {
         Map<Pesel, EncryptedPassword> mapHashPasswordsExpected = Map.of(peselObj, passwordObj);
         Map<Pesel, Customer> customerMapExpected = Map.of(peselObj, customerTest);
-        Map<Pesel, List<Transaction>> transactionsMapExpected = Map.of(peselObj,List.of(new Transaction(peselObj,
+        String date = "2021-02-10";
+        Map<Pesel, List<Transaction>> transactionsMapExpected = Map.of(peselObj,List.of(Transaction.createTransaction(peselObj,
                                                                                 TransactionType.DEPOSIT,
                                                                                 new BigDecimal("1.0"),
-                                                                                LocalDate.now(),
+                                                                                date,
                                                                                 accountTest)));
     
         CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswordsExpected,customerMapExpected,transactionsMapExpected);
