@@ -74,6 +74,7 @@ public interface CustomerDataReaderProvider {
             while (!scanner.hasNextInt()) {
                 System.out.println("\t#incorrect value");
                 scanner.nextLine();
+                System.out.print("choice: ");
             }
             bufferChoice = parseToInt(scanner.nextLine());
             if (!acceptableChoices.contains(bufferChoice)) {

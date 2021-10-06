@@ -7,12 +7,17 @@ import org.app.customer.transaction.Transaction;
 import org.app.customer.transaction.TransactionType;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.app.customer.Account.*;
 import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.ValidatorPersonalData.*;
+import static org.app.customer.transaction.Transaction.*;
+import static org.app.customer.transaction.TransactionType.*;
 
 
 /*
@@ -97,35 +102,37 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
 
     }
 
+    /**
+     *
+     * @param transactions List with user Transactions
+     * @return  modified transactions as List<Transactions>
+     */
     public List<Transaction> service(List<Transaction> transactions) {
         if(transactions == null){
             throw new IllegalArgumentException("Invalid transactions argument in service of customer");
         }
-        var mapTransactions = groupByAccount(transactions);
+
         Scanner scanner = new Scanner(System.in);
-        List<Transaction> transactionAccount;
+        var mapTransactions = groupByNumberAccount(transactions);
 
         do {
-            Account serveAccount = getAccountToService(scanner);
-            transactionAccount = getTransactionOfAccount(mapTransactions,serveAccount);
-            menuAccount(serveAccount);
-            switch (readChoice(scanner, 4)) {
-                case 1 -> balanceAccount(serveAccount);
-                case 2 -> {
-                            boolean answerWithdraw = withdrawMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                            System.out.println(answerWithdraw ?"\t#Money withdrawn successfully;-)" :  "\t#Not enough money" );
-                }
-                case 3 -> {
-                            depositMoney(new BigDecimal(readAmountMoney(scanner)), serveAccount);
-                            System.out.println("\t#Money deposit successfully;-)");
-                }
-                case 4->    serviceHistorySearching(scanner,transactionAccount);
-                default ->  throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
-            }
-            mapTransactions.put(serveAccount,transactionAccount);
-        } while (isYesOrNo("do you want to do any more activities"));
-        System.out.println("\t\t### LOGOUT");
+            var serveAccount = getAccountToService(scanner);
+            var transactionAccount = getTransactionOfAccount(mapTransactions,serveAccount);
 
+                do{
+                    menuAccount(serveAccount);
+                    switch (readChoice(scanner, 4)) {
+                        case 1 -> balanceAccount(serveAccount);
+                        case 2 -> serviceWithdraw(scanner, serveAccount, transactionAccount);
+                        case 3 -> serviceDeposit(scanner, serveAccount, transactionAccount);
+                        case 4 -> serviceHistorySearching(scanner, transactionAccount);
+                        default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
+                    }
+                }while (isYesOrNo("do you want to do any operations in this account"));
+
+                mapTransactions.put(serveAccount.getNumber(),transactionAccount);
+        } while (accountSet.size()==1 && isYesOrNo("do you want to do any more activities"));
+        System.out.println("\t\t### LOGOUT");
         return getAllTransactions(mapTransactions);
     }
 
@@ -135,6 +142,36 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      */
     private void balanceAccount(Account serveAccount) {
         System.out.println(serveAccount.getNumber() + ": " + serveAccount.getAmountMoney() + "zl");
+    }
+
+    /**
+     *
+     * @param scanner object Scanner
+     * @param serveAccount object Account to support
+     * @param transactionAccount object List<Transaction> with all transactions from serveAccount
+     */
+    protected void serviceWithdraw(Scanner scanner,Account serveAccount,List<Transaction> transactionAccount){
+        BigDecimal moneyWithdraw = new BigDecimal(readAmountMoney(scanner));
+        boolean answerWithdraw = withdrawMoney(moneyWithdraw, serveAccount);
+        if(answerWithdraw){
+            saveTransaction(moneyWithdraw,WITHDRAW,transactionAccount,serveAccount);
+            System.out.println("\t#Money withdrawn successfully;-)");
+        }else{
+            System.out.println("\t#Not enough money");
+        }
+    }
+
+    /**
+     *
+     * @param scanner object Scanner
+     * @param serveAccount object Account to support
+     * @param transactionAccount object List<Transaction> with all transactions from serveAccount
+     */
+    protected void serviceDeposit(Scanner scanner,Account serveAccount,List<Transaction> transactionAccount){
+        BigDecimal money = new BigDecimal(readAmountMoney(scanner));
+        depositMoney(money, serveAccount);
+        saveTransaction(money,DEPOSIT,transactionAccount,serveAccount);
+        System.out.println("\t#Money deposit successfully;-)");
     }
 
     /**
@@ -169,6 +206,24 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
             throw new IllegalArgumentException("Invalid account argument when depositing");
         }
         account.addMoney(nextMoney);
+    }
+
+    /**
+     *
+     * @param money object BigDecimal as money
+     * @param type object TransactionType
+     * @param transactions  object List with Transactions
+     * @param servedAccount object Account
+     */
+    private void saveTransaction(BigDecimal money, TransactionType type, List<Transaction> transactions, Account servedAccount) {
+        transactions.add(createTransaction(
+                pesel,
+                type,
+                money,
+                LocalDate.now().toString(),
+                createAccount(servedAccount.getName()
+                        , servedAccount.getNumber()
+                        , servedAccount.getAmountMoney())));
     }
 
     /**
@@ -259,23 +314,23 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
 
     /**
      *
-     * @param transactionMap  object Map<Account,List<Transaction>>
+     * @param transactionMap  object Map<BigInteger,List<Transaction>>
      * @param account object Account to find
      * @return   List of account transactions
      */
-    private List<Transaction> getTransactionOfAccount(Map<Account,List<Transaction>> transactionMap,Account account){
-        var transactions = transactionMap.get(account);
-        return transactions != null ? transactions : new ArrayList<>();
+    private List<Transaction> getTransactionOfAccount(Map<BigInteger,List<Transaction>> transactionMap,Account account){
+        var transactions = transactionMap.get(account.getNumber());
+        return transactions != null ? new ArrayList<>(transactions) : new ArrayList<>();
     }
     /**
      *
      * @param transactions List with Transactions
-     * @return  object Map<Account,List<Transaction>> , grouping by Account grom transactions
+     * @return  object Map<BigInteger,List<Transaction>> , grouping by Account grom transactions
      */
-    private Map<Account,List<Transaction>> groupByAccount(List<Transaction> transactions){
-        return   transactions
+    private Map<BigInteger,List<Transaction>> groupByNumberAccount(List<Transaction> transactions){
+        return transactions
                 .stream()
-                .collect(Collectors.groupingBy(Transaction::getAccount));
+                .collect(Collectors.groupingBy(transaction -> transaction.getAccount().getNumber()));
     }
 
     /**
@@ -283,7 +338,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      * @param transactionsMap object Map<Account,List<Transaction>>
      * @return  List with all transactions from transactionsMap
      */
-    private List<Transaction> getAllTransactions(Map<Account,List<Transaction>> transactionsMap){
+    private List<Transaction> getAllTransactions(Map<BigInteger,List<Transaction>> transactionsMap){
         return transactionsMap
                 .values()
                 .stream()
@@ -338,5 +393,4 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         }
         return accountsList;
     }
-
 }
