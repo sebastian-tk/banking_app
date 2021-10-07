@@ -131,7 +131,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                 }while (isYesOrNo("do you want to do any operations in this account"));
 
                 mapTransactions.put(serveAccount.getNumber(),transactionAccount);
-        } while (accountSet.size()==1 && isYesOrNo("do you want to do any more activities"));
+        } while (countAccounts()!=1 && isYesOrNo("do you want to do any more activities"));
         System.out.println("\t\t### LOGOUT");
         return getAllTransactions(mapTransactions);
     }
@@ -351,7 +351,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      * @return object Account chosen by the customer
      */
     private Account getAccountToService(Scanner scanner) {
-        int amountAccount = accountSet.size();
+        int amountAccount = countAccounts();
         if (amountAccount == 1) {
             return convertAccountsToList().get(0);
         }
@@ -392,5 +392,13 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
             System.out.println(idx + "." + element.getNumber());
         }
         return accountsList;
+    }
+
+    /**
+     *
+     * @return integer as the number of a person's accounts
+     */
+    private int countAccounts(){
+        return accountSet.size();
     }
 }
