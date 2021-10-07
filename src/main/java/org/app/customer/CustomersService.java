@@ -77,7 +77,7 @@ public class CustomersService {
      * @param password array chars as password
      *                 Method add new Customer to database
      */
-    public void add(Customer customer,char[] password){
+    public void add(Customer customer,StringBuilder password){
         if(customer == null){
             throw new IllegalArgumentException("Invalid customer argument when add");
         }
@@ -85,10 +85,11 @@ public class CustomersService {
             throw new IllegalArgumentException("Incorrect data of the user with the pesel number:" + customer.getPesel().getNumber()+". Data exist");
         }
         byte[] salt = generateSalt();
+        char[] charsPassword = convertToChars(password.toString());
         mapCustomers.put(customer.getPesel(), customer);
         mapHashPasswords
-                .put(customer.getPesel(),createEncryptedPassword(customer.getPesel(), mergeHash(salt,generatePasswordHash(password,salt))));
-        clearPassword(password);
+                .put(customer.getPesel(),createEncryptedPassword(customer.getPesel(), mergeHash(salt,generatePasswordHash(charsPassword,salt))));
+        clearPassword(charsPassword);
     }
 
     /**

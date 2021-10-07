@@ -80,9 +80,9 @@ public class Bank {
     /**
      *
      * @param customer object Customer
-     * @param password  array chars as password
+     * @param password  String as password
      */
-    public void addCustomer(Customer customer,char[] password){
+    public void addCustomer(Customer customer,StringBuilder password){
         //arguments are checked in the ServiceCustomer class
         customersService.add(customer,password);
         updateData();

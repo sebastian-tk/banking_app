@@ -23,45 +23,6 @@
       ]
     },
     {
-      "name": "Jerzy",
-      "surname": "Lewandowski",
-      "pesel": {
-        "number": "75072796555"
-      },
-      "address": "ul. Konopnickiej 6 90-206 Luban",
-      "email": "jurek.lewy@onet.pl",
-      "phoneNumber": "699-105-354",
-      "accountSet": [
-        {
-          "name": "personal",
-          "number": 12345678901234567888666777,
-          "amountMoney": 123.4
-        },
-        {
-          "name": "personal",
-          "number": 12345678901234567890666666,
-          "amountMoney": 1550.5
-        }
-      ]
-    },
-    {
-      "name": "Wlodzimierz",
-      "surname": "Siwy",
-      "pesel": {
-        "number": "62041482678"
-      },
-      "address": "ul. Brudna 24 96-208 Rzeszow",
-      "email": "wlodek.siwy@wp.pl",
-      "phoneNumber": "795-200-304",
-      "accountSet": [
-        {
-          "name": "Personal",
-          "number": 90407824185633076281507771,
-          "amountMoney": 123.30
-        }
-      ]
-    },
-    {
       "name": "Zosia",
       "surname": "Kowalska",
       "pesel": {
@@ -135,28 +96,6 @@
       ]
     },
     {
-      "name": "Ola",
-      "surname": "Kowalska",
-      "pesel": {
-        "number": "64042911544"
-      },
-      "address": "ul. Cicha 24 90-003 Wroclaw",
-      "email": "ola.kowalska@wp.pl",
-      "phoneNumber": "643-346-777",
-      "accountSet": [
-        {
-          "name": "personal",
-          "number": 12345678901234567890123444,
-          "amountMoney": 450.5
-        },
-        {
-          "name": "personal",
-          "number": 12345678901234567890123555,
-          "amountMoney": 1500.0
-        }
-      ]
-    },
-    {
       "name": "Roman",
       "surname": "Mocny",
       "pesel": {
@@ -175,6 +114,106 @@
           "name": "personal",
           "number": 12345678901234567888823777,
           "amountMoney": 12390.0
+        }
+      ]
+    },
+    {
+      "name": "Stefan",
+      "surname": "Jan",
+      "pesel": {
+        "number": "85091115062"
+      },
+      "address": "ul. Tramwajowa 23/1 92-226 Zagan",
+      "email": "stefan.jan@onet.pl",
+      "phoneNumber": "629-155-394",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345673331234567888666777,
+          "amountMoney": 123.4
+        },
+        {
+          "name": "personal",
+          "number": 12345670001234567890666666,
+          "amountMoney": 1550.5
+        }
+      ]
+    },
+    {
+      "name": "Maria",
+      "surname": "Nowicka",
+      "pesel": {
+        "number": "98071464195"
+      },
+      "address": "ul. Nowa 2 30-200 Radom",
+      "email": "maria.nowicka@gmail.com",
+      "phoneNumber": "321-654-987",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 19171032846206432785551847,
+          "amountMoney": 0
+        }
+      ]
+    },
+    {
+      "name": "Jerzy",
+      "surname": "Lewandowski",
+      "pesel": {
+        "number": "75072796555"
+      },
+      "address": "ul. Konopnickiej 6 90-206 Luban",
+      "email": "jurek.lewy@onet.pl",
+      "phoneNumber": "699-105-354",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567888666777,
+          "amountMoney": 650.70
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890666666,
+          "amountMoney": 5041.63
+        }
+      ]
+    },
+    {
+      "name": "Wlodzimierz",
+      "surname": "Siwy",
+      "pesel": {
+        "number": "62041482678"
+      },
+      "address": "ul. Brudna 24 96-208 Rzeszow",
+      "email": "wlodek.siwy@wp.pl",
+      "phoneNumber": "795-200-304",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 90407824185633076281507771,
+          "amountMoney": 0.96
+        }
+      ]
+    },
+    {
+      "name": "Ola",
+      "surname": "Kowalska",
+      "pesel": {
+        "number": "64042911544"
+      },
+      "address": "ul. Cicha 24 90-003 Wroclaw",
+      "email": "ola.kowalska@wp.pl",
+      "phoneNumber": "643-346-777",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890123444,
+          "amountMoney": 931.6
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890123555,
+          "amountMoney": 1503.8
         }
       ]
     }

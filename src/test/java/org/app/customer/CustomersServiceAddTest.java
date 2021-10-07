@@ -22,7 +22,7 @@ public class CustomersServiceAddTest {
     private static Pesel peselObj;
     private static Pesel peselAdded;
     private static EncryptedPassword passwordObj;
-    private static char[] passwordChars;
+    private static StringBuilder passwordBuilder;
     private static String allPasswordHash;
 
     @BeforeAll
@@ -38,7 +38,7 @@ public class CustomersServiceAddTest {
         Set<Account> accountSet2 = Set.of(Account.createAccount("Personal",new BigInteger("32145678901234567890123456"),new BigDecimal("0")));
         peselObj = Pesel.createPesel(pesel);
         peselAdded = Pesel.createPesel(pesel2);
-        passwordChars = "CDB2A9945595EDAD9C892A2F09610B58".toCharArray();
+        passwordBuilder = new StringBuilder("CDB2A9945595EDAD9C892A2F09610B58");
         allPasswordHash = "CDB2A9945595EDAD9C892A2F09610B58:CDB2A9945595EDAD9C892A2F09610B58";
 
         testCustomer =Customer.createCustomer(name, surname, pesel, address, email, phoneNumber, accountSet);
@@ -59,7 +59,7 @@ public class CustomersServiceAddTest {
 
         CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords, customerMap,transactionsMap);
 
-        assertThatThrownBy(()-> CustomersServiceTest.add(customer,passwordChars))
+        assertThatThrownBy(()-> CustomersServiceTest.add(customer, passwordBuilder))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid customer argument when add");
     }
@@ -74,7 +74,7 @@ public class CustomersServiceAddTest {
         CustomersService CustomersServiceTest = CustomersService
                                                 .createCustomersService(mapHashPasswords, customerMap,transactionsMap);
 
-        assertThatCode(()->CustomersServiceTest.add(addedCustomer,passwordChars)).doesNotThrowAnyException();
+        assertThatCode(()->CustomersServiceTest.add(addedCustomer, passwordBuilder)).doesNotThrowAnyException();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class CustomersServiceAddTest {
 
         CustomersService CustomersServiceTest = CustomersService.createCustomersService(mapHashPasswords,customerMap,transactionsMap);
 
-        assertThatThrownBy(()->CustomersServiceTest.add(testCustomer,passwordChars))
+        assertThatThrownBy(()->CustomersServiceTest.add(testCustomer, passwordBuilder))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Incorrect data of the user with the pesel number:" + testCustomer.getPesel().getNumber()+". Data exist");
     }
@@ -102,7 +102,7 @@ public class CustomersServiceAddTest {
         customerMapExpected.put(peselAdded,addedCustomer);
 
         CustomersService CustomersServiceTestExpected = CustomersService.createCustomersService(mapHashPasswords,customerMap,transactionsMap);
-        CustomersServiceTestExpected.add(addedCustomer, passwordChars);
+        CustomersServiceTestExpected.add(addedCustomer, passwordBuilder);
 
         assertEquals(customerMapExpected,CustomersServiceTestExpected.getMapCustomers());
     }
