@@ -82,7 +82,10 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "transaction:" + type + ", money: " + money + ", date: " + date + ", account: " + account;
+        return  "transaction:" + type + "\n" +
+                " money: " + money + "zl\n"+
+                " date: " + date + "\n"+
+                " " + account+"\n";
     }
 
     /**

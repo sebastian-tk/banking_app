@@ -10,7 +10,6 @@ import java.math.BigInteger;
     Klient posiada jedno lub więcej kont bankowych, które opisywane są
     przez nazwę, unikalny numer oraz przez ilość środków, które na nich się znajdują.
  */
-@ToString
 @EqualsAndHashCode
 @Getter
 public class Account {
@@ -45,18 +44,11 @@ public class Account {
         return new Account(name,number,amountMoney);
     }
 
-    /**
-     *
-     * @param expression String as expression to check
-     * @return  true, if expression does not contain  a parsable positive double, else false
-     */
-    public static boolean isDecimalNotPositiveValue(String expression){
-        try{
-            double val=Double.parseDouble(expression);
-            return val < 0;
-        }catch (Exception e){
-            return true;
-        }
+    @Override
+    public String toString() {
+        return  "\taccount: " + name + "\n" +
+                "\tnumber: " + number + "\n" +
+                "\tamountMoney: " + amountMoney+"zl";
     }
 
     /**
@@ -82,4 +74,5 @@ public class Account {
         }
         amountMoney=amountMoney.subtract(moneyToGet);
     }
+
 }
