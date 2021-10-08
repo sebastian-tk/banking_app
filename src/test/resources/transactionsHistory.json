@@ -1,0 +1,147 @@
+{
+  "transactions": [
+    {
+      "pesel": {
+        "number": "64042911544"
+      },
+      "type": "WITHDRAW",
+      "money": 78.9,
+      "date": "2021-10-07",
+      "account": {
+        "name": "personal",
+        "number": 12345678901234567890123444,
+        "amountMoney": 371.6
+      }
+    },
+    {
+      "pesel": {
+        "number": "64042911544"
+      },
+      "type": "DEPOSIT",
+      "money": 560,
+      "date": "2021-10-07",
+      "account": {
+        "name": "personal",
+        "number": 12345678901234567890123444,
+        "amountMoney": 931.6
+      }
+    },
+    {
+      "pesel": {
+        "number": "64042911544"
+      },
+      "type": "DEPOSIT",
+      "money": 1.5,
+      "date": "2021-10-07",
+      "account": {
+        "name": "personal",
+        "number": 12345678901234567890123555,
+        "amountMoney": 1501.5
+      }
+    },
+    {
+      "pesel": {
+        "number": "64042911544"
+      },
+      "type": "DEPOSIT",
+      "money": 2.3,
+      "date": "2021-10-07",
+      "account": {
+        "name": "personal",
+        "number": 12345678901234567890123555,
+        "amountMoney": 1503.8
+      }
+    },
+    {
+      "pesel": {
+        "number": "26060675394"
+      },
+      "type": "DEPOSIT",
+      "money": 100000,
+      "date": "2021-10-07",
+      "account": {
+        "name": "Company",
+        "number": 83212212584310948143604442,
+        "amountMoney": 100000
+      }
+    },
+    {
+      "pesel": {
+        "number": "26060675394"
+      },
+      "type": "DEPOSIT",
+      "money": 30000,
+      "date": "2021-10-07",
+      "account": {
+        "name": "Company",
+        "number": 83212212584310948143604442,
+        "amountMoney": 130000
+      }
+    },
+    {
+      "pesel": {
+        "number": "26060675394"
+      },
+      "type": "WITHDRAW",
+      "money": 2500,
+      "date": "2021-10-07",
+      "account": {
+        "name": "Company",
+        "number": 83212212584310948143604442,
+        "amountMoney": 127375.00
+      }
+    },
+    {
+      "pesel": {
+        "number": "67101097948"
+      },
+      "type": "DEPOSIT",
+      "money": 12,
+      "date": "2021-10-06",
+      "account": {
+        "name": "Company",
+        "number": 95269671201762949389860200,
+        "amountMoney": 983951.3181
+      }
+    },
+    {
+      "pesel": {
+        "number": "67101097948"
+      },
+      "type": "WITHDRAW",
+      "money": 12345.90,
+      "date": "2021-10-06",
+      "account": {
+        "name": "Company",
+        "number": 95269671201762949389860200,
+        "amountMoney": 970988.1231
+      }
+    },
+    {
+      "pesel": {
+        "number": "67101097948"
+      },
+      "type": "DEPOSIT",
+      "money": 90000.12,
+      "date": "2021-10-06",
+      "account": {
+        "name": "Company",
+        "number": 95269671201762949389860200,
+        "amountMoney": 1060988.2431
+      }
+    },
+    {
+      "pesel": {
+        "number": "67101097948"
+      },
+      "type": "WITHDRAW",
+      "money": 10200.0,
+      "date": "2021-10-06",
+      "account": {
+        "name": "Company",
+        "number": 95269671201762949389860200,
+        "amountMoney": 1050278.2431
+      }
+    }
+  ]
+}

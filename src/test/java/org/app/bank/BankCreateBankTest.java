@@ -16,7 +16,7 @@ public class BankCreateBankTest {
 
     @BeforeAll
     public static void initName(){
-        path = "src/main/java/org/app/data/";
+        path = "src/main/resources/";
         correctFileNameCustomers = "customers.json";
         correctFileNameBusinessCustomers = "businessCustomers.json";
         correctFileNamePasswords = "passwords.json";

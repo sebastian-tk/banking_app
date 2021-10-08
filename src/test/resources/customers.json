@@ -1,0 +1,221 @@
+{
+  "customers": [
+    {
+      "name": "Pawel",
+      "surname": "Wójcik",
+      "pesel": {
+        "number": "95032113635"
+      },
+      "address": "ul. Mokra 23/1 60-001 Poznan",
+      "email": "pawel.wojcik@outlook.com",
+      "phoneNumber": "782-200-334",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890123666,
+          "amountMoney": 450.5
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890123777,
+          "amountMoney": 1500.0
+        }
+      ]
+    },
+    {
+      "name": "Zosia",
+      "surname": "Kowalska",
+      "pesel": {
+        "number": "88122219687"
+      },
+      "address": "ul. Mickiewicza 10/23 10-100 Warszawa",
+      "email": "zosia.kowalska@wp.pl",
+      "phoneNumber": "680-789-320",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 20220898532579531210710618,
+          "amountMoney": 3000.0
+        }
+      ]
+    },
+    {
+      "name": "Tomasz",
+      "surname": "Nowaczek",
+      "pesel": {
+        "number": "66112133243"
+      },
+      "address": "ul. Lamana 12 92-023 Rzeszow",
+      "email": "tomasz.nowaczek@wp.pl",
+      "phoneNumber": "578-090-890",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678945234567890123555,
+          "amountMoney": 50000.0
+        },
+        {
+          "name": "personal",
+          "number": 12345689012345678901234443,
+          "amountMoney": 1230.40
+        }
+      ]
+    },
+    {
+      "name": "Adam",
+      "surname": "Nowak",
+      "pesel": {
+        "number": "77102259742"
+      },
+      "address": "ul. Adama Mickiewicza 10/23 10-100 Warszawa",
+      "email": "adam.nowak@gmail.com",
+      "phoneNumber": "789-023-456",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890123456,
+          "amountMoney": 0
+        }
+      ]
+    },
+    {
+      "name": "Magda",
+      "surname": "Lewandowska",
+      "pesel": {
+        "number": "75011451347"
+      },
+      "address": "ul. Woronicza 45 10-103 Warszawa",
+      "email": "magda.lewa@onet.pl",
+      "phoneNumber": "789-045-496",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678921234567890123456,
+          "amountMoney": 234.56
+        }
+      ]
+    },
+    {
+      "name": "Roman",
+      "surname": "Mocny",
+      "pesel": {
+        "number": "55072638875"
+      },
+      "address": "ul. Krzywa 23/10 78-201 Czestochowa",
+      "email": "romek.mocny@wp.pl",
+      "phoneNumber": "798-206-394",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890234666,
+          "amountMoney": 650.5
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567888823777,
+          "amountMoney": 12390.0
+        }
+      ]
+    },
+    {
+      "name": "Stefan",
+      "surname": "Jan",
+      "pesel": {
+        "number": "85091115062"
+      },
+      "address": "ul. Tramwajowa 23/1 92-226 Zagan",
+      "email": "stefan.jan@onet.pl",
+      "phoneNumber": "629-155-394",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345673331234567888666777,
+          "amountMoney": 123.4
+        },
+        {
+          "name": "personal",
+          "number": 12345670001234567890666666,
+          "amountMoney": 1550.5
+        }
+      ]
+    },
+    {
+      "name": "Maria",
+      "surname": "Nowicka",
+      "pesel": {
+        "number": "98071464195"
+      },
+      "address": "ul. Nowa 2 30-200 Radom",
+      "email": "maria.nowicka@gmail.com",
+      "phoneNumber": "321-654-987",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 19171032846206432785551847,
+          "amountMoney": 0
+        }
+      ]
+    },
+    {
+      "name": "Jerzy",
+      "surname": "Lewandowski",
+      "pesel": {
+        "number": "75072796555"
+      },
+      "address": "ul. Konopnickiej 6 90-206 Luban",
+      "email": "jurek.lewy@onet.pl",
+      "phoneNumber": "699-105-354",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567888666777,
+          "amountMoney": 650.70
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890666666,
+          "amountMoney": 5041.63
+        }
+      ]
+    },
+    {
+      "name": "Wlodzimierz",
+      "surname": "Siwy",
+      "pesel": {
+        "number": "62041482678"
+      },
+      "address": "ul. Brudna 24 96-208 Rzeszow",
+      "email": "wlodek.siwy@wp.pl",
+      "phoneNumber": "795-200-304",
+      "accountSet": [
+        {
+          "name": "Personal",
+          "number": 90407824185633076281507771,
+          "amountMoney": 0.96
+        }
+      ]
+    },
+    {
+      "name": "Ola",
+      "surname": "Kowalska",
+      "pesel": {
+        "number": "64042911544"
+      },
+      "address": "ul. Cicha 24 90-003 Wroclaw",
+      "email": "ola.kowalska@wp.pl",
+      "phoneNumber": "643-346-777",
+      "accountSet": [
+        {
+          "name": "personal",
+          "number": 12345678901234567890123444,
+          "amountMoney": 931.6
+        },
+        {
+          "name": "personal",
+          "number": 12345678901234567890123555,
+          "amountMoney": 1503.8
+        }
+      ]
+    }
+  ]
+}
