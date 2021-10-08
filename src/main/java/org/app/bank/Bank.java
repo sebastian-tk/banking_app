@@ -236,7 +236,7 @@ public class Bank {
      * @param <T> type of values of Map
      * @return List with objects of type T from map values
      */
-    public static  <T> List<T> convertValuesToList(Map<Pesel,T> map){
+    private static  <T> List<T> convertValuesToList(Map<Pesel,T> map){
         return map.values().stream().toList();
     }
 

@@ -123,9 +123,10 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
 
     @Override
     protected void depositMoney(BigDecimal nextMoney, Account account) {
-        super.depositMoney(nextMoney, account);
         if(taxDepositToPay){
-            super.depositMoney(calculateMoneyTax(nextMoney,TAX_DEPOSIT), account);
+            super.depositMoney(nextMoney.subtract(calculateMoneyTax(nextMoney,TAX_DEPOSIT)), account);
+        }else{
+            super.depositMoney(nextMoney, account);
         }
     }
 
