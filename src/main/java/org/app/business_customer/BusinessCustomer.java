@@ -79,7 +79,6 @@ public class BusinessCustomer extends Customer implements ValidatorPersonalData,
      */
     public static BusinessCustomer createBusinessCustomer(String name, String surname, String pesel, String address, String email, String phoneNumber,
                                                           Set<Account> accountSet, String nameCompany, String addressCompany, String nip, String regon) {
-        Customer.createCustomer(name, surname, pesel, address, email, phoneNumber, accountSet);
         if (nameCompany == null || nameCompany.isEmpty()) {
             throw new IllegalArgumentException("Invalid nameCompany argument when create business customer");
         }

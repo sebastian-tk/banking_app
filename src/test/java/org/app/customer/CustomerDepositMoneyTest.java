@@ -24,7 +24,7 @@ public class CustomerDepositMoneyTest {
         account = Account.createAccount("ING",new BigInteger("12345678901234567890123456"),new BigDecimal("100"));
         Set<Account> accountSet = Set.of(account);
 
-        customer = Customer.createCustomer(name,surname,pesel,address,email,phoneNumber,accountSet);
+        customer = new Customer(name,surname,Pesel.createPesel(pesel),address,email,phoneNumber,accountSet);
     }
 
     @Test

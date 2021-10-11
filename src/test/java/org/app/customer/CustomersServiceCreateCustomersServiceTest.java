@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.app.customer.Pesel.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,8 +36,8 @@ public class CustomersServiceCreateCustomersServiceTest {
         accountTest = Account.createAccount("ING",new BigInteger("12345678901234567890123456"),new BigDecimal("0"));
         Set<Account> accountSet = Set.of(accountTest);
 
-        peselObj = Pesel.createPesel(pesel);
-        customerTest =Customer.createCustomer(name, surname, pesel, address, email, phoneNumber, accountSet);
+        peselObj = createPesel(pesel);
+        customerTest =new Customer(name, surname, createPesel(pesel), address, email, phoneNumber, accountSet);
         passwordObj = EncryptedPassword.createEncryptedPassword(peselObj,"CDB2A9945595EDAD9C892A2F09610B58:CDB2A9945595EDAD9C892A2F09610B58");
         
     }

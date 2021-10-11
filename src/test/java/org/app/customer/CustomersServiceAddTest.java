@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.app.customer.Pesel.*;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,13 +37,13 @@ public class CustomersServiceAddTest {
         String pesel2 = "84091146348";
         Set<Account> accountSet = Set.of(Account.createAccount("Personal",new BigInteger("12345678901234567890123456"),new BigDecimal("0")));
         Set<Account> accountSet2 = Set.of(Account.createAccount("Personal",new BigInteger("32145678901234567890123456"),new BigDecimal("0")));
-        peselObj = Pesel.createPesel(pesel);
-        peselAdded = Pesel.createPesel(pesel2);
+        peselObj = createPesel(pesel);
+        peselAdded = createPesel(pesel2);
         passwordBuilder = new StringBuilder("CDB2A9945595EDAD9C892A2F09610B58");
         allPasswordHash = "CDB2A9945595EDAD9C892A2F09610B58:CDB2A9945595EDAD9C892A2F09610B58";
 
-        testCustomer =Customer.createCustomer(name, surname, pesel, address, email, phoneNumber, accountSet);
-        addedCustomer =Customer.createCustomer(name, surname, pesel2, address, email, phoneNumber, accountSet2);
+        testCustomer =new Customer(name, surname, createPesel(pesel), address, email, phoneNumber, accountSet);
+        addedCustomer =new Customer(name, surname, createPesel(pesel2), address, email, phoneNumber, accountSet2);
         passwordObj = EncryptedPassword.createEncryptedPassword(peselObj,allPasswordHash);
         
     }

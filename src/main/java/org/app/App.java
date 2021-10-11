@@ -59,7 +59,7 @@ public class App {
            bank.addCustomer(createCustomer(
                     "Czeslaw",
                     "Matejko",
-                    "93042235347",
+                    Pesel.createPesel("93042235347"),
                     "ul. Tramwajowa 3/11 92-226 Zagan",
                     "czeslaw.mat@wp.pl",
                     "729-555-994",
@@ -72,7 +72,7 @@ public class App {
             bank.addCustomer(BusinessCustomer.createBusinessCustomer(
                     "Grzegorz",
                     "Stary",
-                    "62121200624",
+                    Pesel.createPesel("62121200624"),
                     "ul. Szybka 11/11 89-100 Lublin",
                     "grzegorz.stary@wp.pl",
                     "629-557-904",

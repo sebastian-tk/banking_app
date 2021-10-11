@@ -43,7 +43,9 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         accountSet = Set.of(accountNumber);
     }
 
-    protected Customer(String name, String surname, Pesel pesel, String address, String email, String phoneNumber, Set<Account> accountSet) {
+    public Customer(String name, String surname, Pesel pesel, String address, String email, String phoneNumber, Set<Account> accountSet) {
+        validateInputArgumentsCustomer(name,surname,pesel,address,email,phoneNumber,accountSet);
+
         this.name = name;
         this.surname = surname;
         this.pesel = pesel;
@@ -54,46 +56,6 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
         this.accountSet = accountSet;
     }
 
-    /**
-     * @param name        String as name
-     * @param surname     String as surname
-     * @param pesel       String as number
-     * @param address     String as address
-     * @param email       String as email
-     * @param phoneNumber String as phoneNumber
-     * @param accountSet  reference HasSet<Account>
-     * @return created new Customer
-     */
-    public static Customer createCustomer(String name, String surname, String pesel, String address, String email, String phoneNumber, Set<Account> accountSet) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Invalid name argument when create customer");
-        }
-        if (surname == null || surname.isEmpty()) {
-            throw new IllegalArgumentException("Invalid surname argument when create customer");
-        }
-        if (address == null || address.isEmpty()) {
-            throw new IllegalArgumentException("Invalid address argument when create customer");
-        }
-        if (isAddressNotCorrect(address)) {
-            throw new IllegalArgumentException("Incorrect address syntax: " + address);
-        }
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("Invalid email argument when create customer");
-        }
-        if (isEmailNotCorrect(email)) {
-            throw new IllegalArgumentException("Incorrect email syntax: " + email);
-        }
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
-            throw new IllegalArgumentException("Invalid phoneNumber argument when create customer");
-        }
-        if (isNumberNotCorrect(phoneNumber)) {
-            throw new IllegalArgumentException("Incorrect phoneNumber syntax");
-        }
-        if (accountSet == null || accountSet.isEmpty()) {
-            throw new IllegalArgumentException("Invalid accountSet argument when create customer");
-        }
-        return new Customer(name, surname, Pesel.createPesel(pesel), address, email, phoneNumber, accountSet);
-    }
 
     @Override
     public String toString() {
@@ -272,7 +234,7 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                                                                 .equals(searchMoney));
             }
             case 3 -> {
-                System.out.println("Enter type of transaction ");
+                System.out.println("Enter type of transaction: "+ Arrays.toString(values()));
                 String nameType =readDataFromUser(scanner, "type: ", TransactionType::isTypeNotCorrect);
                 printByDate(transactionsAccount,transaction -> transaction.getType().name().equals(nameType));
             }
@@ -400,5 +362,49 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      */
     private int countAccounts(){
         return accountSet.size();
+    }
+
+    /**
+     * @param name        String as name
+     * @param surname     String as surname
+     * @param pesel       Pesel as number
+     * @param address     String as address
+     * @param email       String as email
+     * @param phoneNumber String as phoneNumber
+     * @param accountSet  reference HasSet<Account>
+     *                      Method checks all input arguments for Customer , if something is wrong
+     *                      throws IllegalArgumentException
+     */
+    private static void validateInputArgumentsCustomer(String name, String surname, Pesel pesel, String address, String email, String phoneNumber, Set<Account> accountSet){
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Invalid name argument when create customer");
+        }
+        if (surname == null || surname.isEmpty()) {
+            throw new IllegalArgumentException("Invalid surname argument when create customer");
+        }
+        if(pesel == null){
+            throw new IllegalArgumentException("Invalid pesel argument when create customer");
+        }
+        if (address == null || address.isEmpty()) {
+            throw new IllegalArgumentException("Invalid address argument when create customer");
+        }
+        if (isAddressNotCorrect(address)) {
+            throw new IllegalArgumentException("Incorrect address syntax: " + address);
+        }
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Invalid email argument when create customer");
+        }
+        if (isEmailNotCorrect(email)) {
+            throw new IllegalArgumentException("Incorrect email syntax: " + email);
+        }
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
+            throw new IllegalArgumentException("Invalid phoneNumber argument when create customer");
+        }
+        if (isNumberNotCorrect(phoneNumber)) {
+            throw new IllegalArgumentException("Incorrect phoneNumber syntax");
+        }
+        if (accountSet == null || accountSet.isEmpty()) {
+            throw new IllegalArgumentException("Invalid accountSet argument when create customer");
+        }
     }
 }

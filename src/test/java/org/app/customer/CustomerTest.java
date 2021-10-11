@@ -11,13 +11,14 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.app.customer.Pesel.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class CustomerCreateCustomerTest {
+public class CustomerTest {
     private static String correctName;
     private static String correctSurname;
-    private static String correctPesel;
+    private static Pesel correctPesel;
     private static String correctAddress;
     private static String correctEmail;
     private static String correctPhoneNumber;
@@ -27,7 +28,7 @@ public class CustomerCreateCustomerTest {
     public static void init(){
         correctName = "Name";
         correctSurname = "Surname";
-        correctPesel = "78092475727";
+        correctPesel = createPesel("78092475727");
         correctAddress = "ul. Adama Mickiewicza 10/23 10-100 Warszawa";
         correctEmail = "firstword.secondword@gmail.com";
         correctPhoneNumber = "111-111-111";
@@ -38,7 +39,7 @@ public class CustomerCreateCustomerTest {
     @DisplayName("should throws IllegalArgumentExceptions when name argument is null")
     public void test1() {
         String nameTest = null;
-        assertThatThrownBy(() -> Customer.createCustomer(nameTest, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(nameTest, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid name argument when create customer");
     }
@@ -48,7 +49,7 @@ public class CustomerCreateCustomerTest {
     public void test2() {
         String nameTest = "";
 
-        assertThatThrownBy(() -> Customer.createCustomer(nameTest, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(nameTest, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid name argument when create customer");
     }
@@ -59,7 +60,7 @@ public class CustomerCreateCustomerTest {
 
         String surnameTest = null;
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, surnameTest, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, surnameTest, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid surname argument when create customer");
     }
@@ -69,7 +70,7 @@ public class CustomerCreateCustomerTest {
     public void test4() {
         String surnameTest = "";
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, surnameTest, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, surnameTest, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid surname argument when create customer");
     }
@@ -80,7 +81,7 @@ public class CustomerCreateCustomerTest {
 
         String addressTest = null;
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, addressTest, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, addressTest, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid address argument when create customer");
     }
@@ -90,7 +91,7 @@ public class CustomerCreateCustomerTest {
     public void test6() {
         String addressTest = "";
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, addressTest, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, addressTest, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid address argument when create customer");
     }
@@ -109,7 +110,7 @@ public class CustomerCreateCustomerTest {
     })
     public void test7(String addressesTest) {
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, addressesTest, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, addressesTest, correctEmail, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Incorrect address syntax: "+addressesTest);
     }
@@ -125,7 +126,7 @@ public class CustomerCreateCustomerTest {
     })
     public void test8(String addressesTest) {
 
-        assertThatCode(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, addressesTest, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatCode(() -> new Customer(correctName, correctSurname, correctPesel, addressesTest, correctEmail, correctPhoneNumber, correctAccountSet))
                 .doesNotThrowAnyException();
     }
 
@@ -134,7 +135,7 @@ public class CustomerCreateCustomerTest {
     public void test9() {
         String emailTest = null;
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, emailTest, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailTest, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid email argument when create customer");
     }
@@ -144,7 +145,7 @@ public class CustomerCreateCustomerTest {
     public void test10() {
         String emailTest = "";
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, emailTest, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailTest, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid email argument when create customer");
     }
@@ -163,7 +164,7 @@ public class CustomerCreateCustomerTest {
     })
     public void test11(String emailsTest) {
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Incorrect email syntax: "+emailsTest);
     }
@@ -178,7 +179,7 @@ public class CustomerCreateCustomerTest {
     })
     public void test12(String emailsTest) {
 
-        assertThatCode(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
+        assertThatCode(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
                 .doesNotThrowAnyException();
     }
 
@@ -187,7 +188,7 @@ public class CustomerCreateCustomerTest {
     public void test13() {
         String phoneNumberTest = null;
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, phoneNumberTest, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, phoneNumberTest, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid phoneNumber argument when create customer");
     }
@@ -197,7 +198,7 @@ public class CustomerCreateCustomerTest {
     public void test14() {
         String phoneNumberTest = "";
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, phoneNumberTest, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, phoneNumberTest, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid phoneNumber argument when create customer");
     }
@@ -213,7 +214,7 @@ public class CustomerCreateCustomerTest {
     })
     public void test15(String numbersTest) {
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, numbersTest, correctAccountSet))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, numbersTest, correctAccountSet))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Incorrect phoneNumber syntax");
     }
@@ -222,7 +223,7 @@ public class CustomerCreateCustomerTest {
     @DisplayName("should not throws exception when phoneNumber syntax is correct")
     public void test16() {
 
-        assertThatCode(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+        assertThatCode(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
                 .doesNotThrowAnyException();
     }
 
@@ -231,7 +232,7 @@ public class CustomerCreateCustomerTest {
     public void test17() {
         Set<Account> accountSetTest = null;
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, accountSetTest))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, accountSetTest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid accountSet argument when create customer");
     }
@@ -241,7 +242,7 @@ public class CustomerCreateCustomerTest {
     public void test18() {
         Set<Account> accountSetTest = new HashSet<>();
 
-        assertThatThrownBy(() -> Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, accountSetTest))
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, accountSetTest))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid accountSet argument when create customer");
     }
@@ -250,14 +251,14 @@ public class CustomerCreateCustomerTest {
     @DisplayName("should return object Customer the same as passed by argument")
     public void test19() {
 
-        Customer customerResult = Customer.createCustomer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet);
+        Customer customerResult = new Customer(correctName, correctSurname, correctPesel, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet);
 
         assertAll(
                 "Customer fields test",
                 ()-> assertThat(customerResult).isNotNull(),
                 ()-> assertThat(customerResult.getName()).isEqualTo(correctName),
                 ()-> assertThat(customerResult.getSurname()).isEqualTo(correctSurname),
-                ()-> assertThat(customerResult.getPesel()).isEqualTo(Pesel.createPesel(correctPesel)),
+                ()-> assertThat(customerResult.getPesel()).isEqualTo(correctPesel),
                 ()-> assertThat(customerResult.getAddress()).isEqualTo(correctAddress),
                 ()-> assertThat(customerResult.getEmail()).isEqualTo(correctEmail),
                 ()-> assertThat(customerResult.getPhoneNumber()).isEqualTo(correctPhoneNumber),
