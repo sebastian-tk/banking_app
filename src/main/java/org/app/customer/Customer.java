@@ -113,6 +113,15 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      * @param transactionAccount object List<Transaction> with all transactions from serveAccount
      */
     protected void serviceWithdraw(Scanner scanner,Account serveAccount,List<Transaction> transactionAccount){
+        if(scanner == null){
+            throw new IllegalArgumentException("Invalid scanner argument in serviceWithdraw");
+        }
+        if(serveAccount == null){
+            throw new IllegalArgumentException("Invalid serveAccount argument in serviceWithdraw");
+        }
+        if(transactionAccount == null){
+            throw new IllegalArgumentException("Invalid transactionAccount argument in serviceWithdraw");
+        }
         BigDecimal moneyWithdraw = new BigDecimal(readAmountMoney(scanner));
         boolean answerWithdraw = withdrawMoney(moneyWithdraw, serveAccount);
         if(answerWithdraw){
@@ -130,6 +139,15 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
      * @param transactionAccount object List<Transaction> with all transactions from serveAccount
      */
     protected void serviceDeposit(Scanner scanner,Account serveAccount,List<Transaction> transactionAccount){
+        if(scanner == null){
+            throw new IllegalArgumentException("Invalid scanner argument in serviceDeposit");
+        }
+        if(serveAccount == null){
+            throw new IllegalArgumentException("Invalid serveAccount argument in serviceDeposit");
+        }
+        if(transactionAccount == null){
+            throw new IllegalArgumentException("Invalid transactionAccount argument in serviceDeposit");
+        }
         BigDecimal money = new BigDecimal(readAmountMoney(scanner));
         depositMoney(money, serveAccount);
         saveTransaction(money,DEPOSIT,transactionAccount,serveAccount);
