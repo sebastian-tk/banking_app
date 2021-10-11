@@ -1,21 +1,21 @@
 package org.app.customer;
 
+import org.app.persistence.converter.CustomersJsonConverter;
+import org.app.persistence.model.CustomersList;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import static org.app.customer.Pesel.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class CustomerTest {
+    private static final String fileName= "src/test/resources/customerCorrectInputData.json";
+    private static Customer correctCustomer;
     private static String correctName;
     private static String correctSurname;
     private static Pesel correctPesel;
@@ -26,14 +26,30 @@ public class CustomerTest {
 
     @BeforeAll
     public static void init(){
-        correctName = "Name";
-        correctSurname = "Surname";
-        correctPesel = createPesel("78092475727");
-        correctAddress = "ul. Adama Mickiewicza 10/23 10-100 Warszawa";
-        correctEmail = "firstword.secondword@gmail.com";
-        correctPhoneNumber = "111-111-111";
-        correctAccountSet = Set.of(Account.createAccount("ING",new BigInteger("12345678901234567890123456"),new BigDecimal("0")));
+        correctCustomer = readDataCustomer();
+        correctName = correctCustomer.getName();
+        correctSurname = correctCustomer.getSurname();
+        correctPesel = correctCustomer.getPesel();
+        correctAddress = correctCustomer.getAddress();
+        correctEmail = correctCustomer.getEmail();
+        correctPhoneNumber = correctCustomer.getPhoneNumber();
+        correctAccountSet = correctCustomer.getAccountSet();
     }
+
+    private static Customer readDataCustomer(){
+        CustomersJsonConverter customersJsonConverter = new CustomersJsonConverter(fileName);
+        Optional<CustomersList> customersList = customersJsonConverter.fromJson();
+        if(customersList.isEmpty()){
+            throw new IllegalStateException("Data corrupted from test Customer file");
+        }
+        return customersList
+                .stream()
+                .map(CustomersList::getCustomers)
+                .flatMap(Collection::stream)
+                .toList()
+                .get(0);
+    }
+
 
     @Test
     @DisplayName("should throws IllegalArgumentExceptions when name argument is null")
@@ -266,5 +282,13 @@ public class CustomerTest {
                 );
     }
 
+    @Test
+    @DisplayName("should throws IllegalArgumentExceptions when pesel argument is null")
+    public void test20() {
+        Pesel peselTest = null;
 
+        assertThatThrownBy(() -> new Customer(correctName, correctSurname, peselTest, correctAddress, correctEmail, correctPhoneNumber, correctAccountSet))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid pesel argument when create customer");
+    }
 }

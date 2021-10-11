@@ -21,6 +21,7 @@
         <junit.jupiter.engine.version>5.7.2</junit.jupiter.engine.version>
         <junit.vintage.engine.version>5.7.2</junit.vintage.engine.version>
         <junit.jupiter.params.version>5.7.2</junit.jupiter.params.version>
+        <junit.platform.engine.version>1.8.1</junit.platform.engine.version>
         <assertj.core.version>3.20.2</assertj.core.version>
 
         <maven.enforcer.plugin.version>3.0.0</maven.enforcer.plugin.version>
@@ -66,6 +67,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-engine</artifactId>
+                <version>${junit.platform.engine.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.core.version}</version>
@@ -104,6 +110,11 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.params.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-engine</artifactId>
+            <version>${junit.platform.engine.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
