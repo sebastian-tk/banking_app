@@ -90,10 +90,10 @@ public class Customer implements ValidatorPersonalData,CustomerDataReaderProvide
                         case 4 -> serviceHistorySearching(scanner, transactionAccount);
                         default -> throw new IllegalStateException("\t#Error-unacceptable choice in service accounts");
                     }
-                }while (isYesOrNo("do you want to do any operations in this account"));
+                }while (isYesOrNo(scanner,"do you want to do any operations in this account"));
 
                 mapTransactions.put(serveAccount.getNumber(),transactionAccount);
-        } while (countAccounts()!=1 && isYesOrNo("do you want to do any more activities"));
+        } while (countAccounts()!=1 && isYesOrNo(scanner,"do you want to do any more activities"));
         System.out.println("\t\t### LOGOUT");
         return getAllTransactions(mapTransactions);
     }

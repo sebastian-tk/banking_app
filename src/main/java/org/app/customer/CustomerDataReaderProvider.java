@@ -15,6 +15,15 @@ public interface CustomerDataReaderProvider {
      * @return correct String from user
      */
     static String readDataFromUser(Scanner scanner, String nameData, Predicate<String> pred) {
+        if(scanner == null){
+            throw new IllegalArgumentException("Scanner cannot be null in readDataFromUser");
+        }
+        if(nameData == null || nameData.isEmpty()){
+            throw new IllegalArgumentException("Invalid nameData argument in readDataFromUser");
+        }
+        if(pred == null){
+            throw new IllegalArgumentException("Interface Predicate can not be null in readDataFromUser");
+        }
         String buffer;
         boolean run;
         do {
@@ -33,6 +42,12 @@ public interface CustomerDataReaderProvider {
      * @return String as expression from user
      */
     static String readExpression(Scanner scanIn, String message) {
+        if(scanIn == null){
+            throw new IllegalArgumentException("Scanner cannot be null in readExpression");
+        }
+        if(message == null || message.isEmpty()){
+            throw new IllegalArgumentException("Invalid message argument in readExpression");
+        }
         System.out.print(message);
         return scanIn.nextLine();
     }
@@ -41,6 +56,9 @@ public interface CustomerDataReaderProvider {
      * @return String as positive double value
      */
     static String readAmountMoney(Scanner scanner) {
+        if(scanner == null){
+            throw new IllegalArgumentException("Scanner cannot be null in readAmountMoney");
+        }
         return readDataFromUser(scanner, "amount money: ", CustomerDataReaderProvider::isDecimalNotPositiveValue);
     }
 
@@ -48,8 +66,13 @@ public interface CustomerDataReaderProvider {
      * @param question String as question for user
      * @return true, if user answered yes or false if user answered false
      */
-    static boolean isYesOrNo(String question) {
-        Scanner scanner = new Scanner(System.in);
+    static boolean isYesOrNo(Scanner scanner,String question) {
+        if(scanner == null){
+            throw new IllegalArgumentException("Scanner cannot be null in isYesOrNo");
+        }
+        if(question == null || question.isEmpty()){
+            throw new IllegalArgumentException("Invalid question argument in isYesOrNo");
+        }
         String buffer;
         do {
             buffer = readExpression(scanner, question + "(yes/no):");
@@ -67,6 +90,12 @@ public interface CustomerDataReaderProvider {
      * @return integer value as an acceptable number selected by the user
      */
     static  int readChoice(Scanner scanner, int amountOptions) {
+        if(scanner == null){
+            throw new IllegalArgumentException("Scanner cannot be null in readChoice");
+        }
+        if(amountOptions<1){
+            throw new IllegalArgumentException("Invalid amountOptions argument.Must be positive");
+        }
         List<Integer> acceptableChoices = generateNumber(1,amountOptions);
         int bufferChoice;
         do {
