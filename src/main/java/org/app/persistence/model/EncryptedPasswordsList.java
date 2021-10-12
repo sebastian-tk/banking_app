@@ -12,6 +12,9 @@ public class EncryptedPasswordsList {
     private List<EncryptedPassword> encryptedPasswords;
 
     public EncryptedPasswordsList(List<EncryptedPassword> encryptedPasswords) {
+        if(encryptedPasswords == null){
+            throw new IllegalArgumentException("Invalid encryptedPasswords argument when create EncryptedPasswordsList");
+        }
         this.encryptedPasswords = encryptedPasswords;
     }
 }

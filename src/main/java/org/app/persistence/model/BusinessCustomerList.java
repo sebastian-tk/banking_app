@@ -12,6 +12,9 @@ public class BusinessCustomerList {
     List<BusinessCustomer> businessCustomers;
 
     public BusinessCustomerList(List<BusinessCustomer> businessCustomers) {
+        if(businessCustomers == null){
+            throw new IllegalArgumentException("Invalid businessCustomers argument when create BusinessCustomersList");
+        }
         this.businessCustomers = businessCustomers;
     }
 }

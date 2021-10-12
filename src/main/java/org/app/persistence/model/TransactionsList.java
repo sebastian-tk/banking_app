@@ -10,6 +10,9 @@ public class TransactionsList{
     private List<Transaction> transactions;
 
     public TransactionsList(List<Transaction> transactions) {
+        if(transactions == null){
+            throw new IllegalArgumentException("Invalid transactions argument when create TransactionsList");
+        }
         this.transactions = transactions;
     }
 }
