@@ -1,0 +1,13 @@
+{
+  "pesel": {
+    "number": "64042911544"
+  },
+  "type": "DEPOSIT",
+  "money": 2.3,
+  "date": "2021-10-07",
+  "account": {
+    "name": "personal",
+    "number": 12345678901234567890123555,
+    "amountMoney": 1503.8
+  }
+}

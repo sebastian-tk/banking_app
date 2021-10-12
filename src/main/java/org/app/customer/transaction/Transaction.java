@@ -3,7 +3,6 @@ package org.app.customer.transaction;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import org.app.customer.Account;
 import org.app.customer.Pesel;
 
@@ -75,6 +74,9 @@ public class Transaction {
      * @return  true, if date is not correct, else false
      */
     public static LocalDate parseDate(String date){
+        if(date == null || date.isEmpty()){
+            throw new IllegalArgumentException("Invalid date argument when parse date");
+        }
            return LocalDate
                     .parse(date, DateTimeFormatter.ofPattern("uuuu-MM-dd")
                             .withResolverStyle(ResolverStyle.STRICT));

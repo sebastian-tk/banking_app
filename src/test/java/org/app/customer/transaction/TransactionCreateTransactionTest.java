@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
@@ -62,10 +63,7 @@ class TransactionCreateTransactionTest {
 
     @ParameterizedTest
     @DisplayName("should throw IllegalArgumentException when money argument is not positive")
-    @ValueSource(strings = {
-                            "-0.0000001",
-                            "-1.0",
-                            "-10000000000000.0"})
+    @CsvFileSource(resources = "/notPositiveValuesMoney.csv")
     public void test4(String moneyTest) {
         Assertions.assertThatThrownBy(() -> Transaction.createTransaction(correctPesel, correctType, new BigDecimal(moneyTest), correctDate, correctAccount))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -84,14 +82,7 @@ class TransactionCreateTransactionTest {
 
     @ParameterizedTest
     @DisplayName("should throw IllegalArgumentException when syntax date is not correct")
-    @ValueSource(strings = {
-            "20-02-2001",
-            "31-02-2000",
-            "date",
-            "03-31-1990",
-            "2001-31-02",
-            "2001-02-31",
-            "2001-02-29",})
+    @CsvFileSource(resources = "/incorrectDates.csv")
     public void test6(String dateTest) {
         Assertions.assertThatThrownBy(() -> Transaction.createTransaction(correctPesel, correctType, correctMoney, dateTest, correctAccount))
                 .isInstanceOf(IllegalArgumentException.class)
