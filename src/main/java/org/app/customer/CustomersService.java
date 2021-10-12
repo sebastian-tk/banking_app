@@ -75,21 +75,32 @@ public class CustomersService {
      *
      * @param customer object Customer to add
      * @param password array chars as password
-     *                 Method add new Customer to database
+     *                  Method adds new customer , when customer exist,pesel already exist or number account
+     *                  already exist throws IllegalArgumentException
+     *
      */
     public void add(Customer customer,StringBuilder password){
         if(customer == null){
             throw new IllegalArgumentException("Invalid customer argument when add");
         }
-        if(areAccountsNotNumbersUnique(customer.getAccountSet()) || isUserExist(customer.getPesel())){
-            throw new IllegalArgumentException("Incorrect data of the user with the pesel number:" + customer.getPesel().getNumber()+". Data exist");
+        if(password == null || password.isEmpty()){
+            throw new IllegalArgumentException("Invalid password argument when add");
         }
-        byte[] salt = generateSalt();
-        char[] charsPassword = convertToChars(password.toString());
-        mapCustomers.put(customer.getPesel(), customer);
-        mapHashPasswords
-                .put(customer.getPesel(),createEncryptedPassword(customer.getPesel(), mergeHash(salt,generatePasswordHash(charsPassword,salt))));
-        clearPassword(charsPassword);
+        if(areAccountsNotNumbersUnique(customer.getAccountSet()) && !isUserExist(customer.getPesel())){
+            throw new IllegalArgumentException("Incorrect number account: " + customer.getAccountSet()+ ". This account already exist");
+        }
+        if(isUserExist(customer.getPesel()) && !areAccountsNotNumbersUnique(customer.getAccountSet())){
+            throw new IllegalArgumentException("Incorrect pesel customer : " + customer.getPesel().getNumber()+ ". This pesel already exist");
+        }
+        if(areAccountsNotNumbersUnique(customer.getAccountSet()) && isUserExist(customer.getPesel())){
+            throw new IllegalArgumentException("Incorrect customer:" + customer.getName()+" " + customer.getSurname() +". Customer already exist");
+        }
+            byte[] salt = generateSalt();
+            char[] charsPassword = convertToChars(password.toString());
+            mapCustomers.put(customer.getPesel(), customer);
+            mapHashPasswords
+                    .put(customer.getPesel(),createEncryptedPassword(customer.getPesel(), mergeHash(salt,generatePasswordHash(charsPassword,salt))));
+            clearPassword(charsPassword);
     }
 
     /**

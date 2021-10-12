@@ -1,19 +1,19 @@
 {
   "customers": [
     {
-      "name": "Zosia",
-      "surname": "Kowalska",
+      "name": "Marek",
+      "surname": "Nowaczek",
       "pesel": {
-        "number": "88122219687"
+        "number": "62010548684"
       },
-      "address": "ul. Mickiewicza 10/23 10-100 Warszawa",
-      "email": "zosia.kowalska@wp.pl",
-      "phoneNumber": "680-789-320",
+      "address": "ul. Mickiewicza 1/12 11-100 Elblag",
+      "email": "marek.nowaczek@onet.pl",
+      "phoneNumber": "780-788-622",
       "accountSet": [
         {
           "name": "Personal",
-          "number": 20220898532579531210710618,
-          "amountMoney": 3000.0
+          "number": 20000000000000000000000000,
+          "amountMoney": 100.0
         }
       ]
     }
