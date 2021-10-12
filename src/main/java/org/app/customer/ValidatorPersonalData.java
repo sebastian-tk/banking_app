@@ -48,7 +48,7 @@ package org.app.customer;
      */
      static boolean isNameOrSurnameNotCorrect(String expression){
          if(expression == null || expression.isEmpty()){
-             throw new IllegalArgumentException("Invalid expression argument when check syntax name or surname");
+             throw new IllegalArgumentException("Invalid expression argument when check syntax name/surname");
          }
         return !expression.matches("^[A-Z][a-z]{2,}$");
     }
