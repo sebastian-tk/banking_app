@@ -328,4 +328,13 @@ public class CustomersService {
                 .flatMap(Collection::stream)
                 .anyMatch(account -> account.getNumber().equals(number));
     }
+
+    /**
+     *
+     * @param expression String as expression to convert
+     * @return  array chars from expression
+     */
+    private char[] convertToChars(String expression){
+        return expression.toCharArray();
+    }
 }

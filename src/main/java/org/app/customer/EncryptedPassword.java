@@ -63,7 +63,7 @@ public class EncryptedPassword {
      */
     public static  String generateFullHash(char[] password){
         if(password == null || password.length == 0){
-            throw new IllegalArgumentException("Invalid password argument when generate password hash");
+            throw new IllegalArgumentException("Invalid password argument when generate full password hash");
         }
         byte[] salt = generateSalt();
         String hashPassword = generatePasswordHash(password,salt);
@@ -77,6 +77,12 @@ public class EncryptedPassword {
      * @return  String as hash password
      */
     public static String generatePasswordHash(char[] password, byte[] salt) {
+        if(password == null || password.length == 0){
+            throw new IllegalArgumentException("Invalid password argument when generate password hash");
+        }
+        if(salt == null || salt.length == 0){
+            throw new IllegalArgumentException("Invalid salt argument when generate password hash");
+        }
         PBEKeySpec spec = null;
         char[] charsPassword = null;
         byte[] hashPassword;
@@ -102,7 +108,37 @@ public class EncryptedPassword {
      *                 Method sets all chars to Character.MIN_VALUE
      */
     public static void clearPassword(char[] password){
+        if(password == null || password.length == 0){
+            throw new IllegalArgumentException("Invalid password argument when clear password");
+        }
         Arrays.fill(password,Character.MIN_VALUE);
+    }
+
+    /**
+     *
+     * @return array bytes as random salt
+     */
+    public static byte[] generateSalt(){
+        SecureRandom secRand = new SecureRandom();
+        byte[] randomSalt = new byte[EncryptedPassword.BYTES_SALT_LENGTH];
+        secRand.nextBytes(randomSalt);
+        return randomSalt;
+    }
+
+    /**
+     *
+     * @param salt array byte
+     * @param encryptedPassword String as hash password
+     * @return  String as a complete encrypted hash
+     */
+    public static  String mergeHash(byte[] salt,String encryptedPassword){
+        if(encryptedPassword == null || encryptedPassword.isEmpty()){
+            throw new IllegalArgumentException("Invalid encryptedPassword argument when try merge hash");
+        }
+        if(salt == null || salt.length == 0){
+            throw new IllegalArgumentException("Invalid salt argument when try merge hash");
+        }
+        return bytesToHex(salt)+EncryptedPassword.SEPARATOR_HASH+encryptedPassword;
     }
 
     /**
@@ -110,7 +146,7 @@ public class EncryptedPassword {
      * @param password String as hash password
      * @return  true, if password is not correct, else flase
      */
-    public static boolean isPasswordHashNotCorrect(String password){
+    private static boolean isPasswordHashNotCorrect(String password){
         if(password.matches("^\\w*:\\w*$")){
             int lengthSalt = BYTES_SALT_LENGTH * 2;
             String[] expressions =divideExpression(password,SEPARATOR_HASH);
@@ -118,22 +154,12 @@ public class EncryptedPassword {
         }
         return true;
     }
-
-    /**
-     *
-     * @param expression String as expression to convert
-     * @return  array chars from expression
-     */
-    public static char[] convertToChars(String expression){
-        return expression.toCharArray();
-    }
-
     /**
      *
      * @param bytes array bytes
      * @return  String as formatted bytes hexadecimal  by pattern: width 2 , the result will be zero-padded
      */
-    public static String bytesToHex(byte[] bytes){
+    private static String bytesToHex(byte[] bytes){
         StringBuilder strBui = new StringBuilder();
         for(var oneByte : bytes){
             strBui.append(String.format("%02X",oneByte));
@@ -146,7 +172,7 @@ public class EncryptedPassword {
      * @param expression String as expression to convert
      * @return  bytes array from expression
      */
-    public static byte[] stringToBytes(String expression){
+    private static byte[] stringToBytes(String expression){
         if (expression == null || expression.isEmpty()) {
             throw new IllegalArgumentException("Invalid expression argument when convert to bytes");
         }
@@ -163,16 +189,6 @@ public class EncryptedPassword {
 
     /**
      *
-     * @return array bytes as random salt
-     */
-    public static byte[] generateSalt(){
-        SecureRandom secRand = new SecureRandom();
-        byte[] randomSalt = new byte[EncryptedPassword.BYTES_SALT_LENGTH];
-        secRand.nextBytes(randomSalt);
-        return randomSalt;
-    }
-    /**
-     *
      * @param expression String as expression to split
      * @param separator String as separator
      * @return array Strings from expression by separator
@@ -180,15 +196,4 @@ public class EncryptedPassword {
     private static String[] divideExpression(String expression,String separator){
         return expression.split(separator);
     }
-
-    /**
-     *
-     * @param salt array byte
-     * @param encryptedPassword String as hash password
-     * @return  String as a complete encrypted hash
-     */
-    public static  String mergeHash(byte[] salt,String encryptedPassword){
-        return bytesToHex(salt)+EncryptedPassword.SEPARATOR_HASH+encryptedPassword;
-    }
-
 }
