@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
@@ -168,16 +169,7 @@ public class CustomerTest {
 
     @ParameterizedTest
     @DisplayName("should throws IllegalArgumentException when email syntax is incorrect")
-    @ValueSource(strings = {
-            "First.Part@gmail.com",
-            "firsT.secondname@outlook.com",
-            "firstname.secondname#domain.com",
-            "firstname.secondname@outlook.pl",
-            "firstname,secondname@outlook.com",
-            "firstname.secondname@wp.com",
-            "firstname.@onet.pl",
-            "word@onet.pl"
-    })
+    @CsvFileSource(resources = "/incorrectEmails.csv")
     public void test11(String emailsTest) {
 
         assertThatThrownBy(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
@@ -187,12 +179,7 @@ public class CustomerTest {
 
     @ParameterizedTest
     @DisplayName("should no throws when address syntax is correct")
-    @ValueSource(strings = {
-            "first.part@gmail.com",
-            "p.second@outlook.com",
-            "name.n@wp.pl",
-            "name.surname@onet.pl",
-    })
+    @CsvFileSource(resources = "/correctEmails.csv")
     public void test12(String emailsTest) {
 
         assertThatCode(() -> new Customer(correctName, correctSurname, correctPesel, correctAddress, emailsTest, correctPhoneNumber, correctAccountSet))
