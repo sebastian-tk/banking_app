@@ -47,8 +47,7 @@ import static org.app.customer.Pesel.*;
  */
 public class App {
     public static void main(String[] args) {
-//        final String path = "src/main/resources/";
-        final String path = "";
+        final String path = "src/main/resources/";
         final String fileCustomers = "customers.json";
         final String fileBusinessCustomers = "businessCustomers.json";
         final String filePasswords = "passwords.json";

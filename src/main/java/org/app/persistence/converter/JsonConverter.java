@@ -8,15 +8,27 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
+import static java.nio.file.Files.*;
+
 public abstract class JsonConverter <T>{
-    private final String jsonFileName;
-    private final Gson gsonObj =new GsonBuilder().setPrettyPrinting().create();
-    private final Type typeT = ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    private final static String SEPARATOR ="/";
+    private final static String DIRECTORY_NAME ="/data";
+    private final Gson gsonObj;
+    private final Type typeT;
+    private final String defaultFile;
+    private String jsonFileName;
+
 
     public JsonConverter(String jsonFileName) {
         this.jsonFileName = jsonFileName;
+        this.gsonObj = new GsonBuilder().setPrettyPrinting().create();
+        this.typeT = ((ParameterizedType)getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.defaultFile = DIRECTORY_NAME.concat(getNameJsonFile());
     }
 
     /**
@@ -39,6 +51,7 @@ public abstract class JsonConverter <T>{
      * @return object Optional<T> with object T type
      */
     public Optional<T> fromJson(){
+        ifNotExitsCreate();
         try(FileReader reader = new FileReader(jsonFileName)){
             return Optional.of(gsonObj.fromJson(reader,typeT));
         }catch (IOException exc){
@@ -47,5 +60,29 @@ public abstract class JsonConverter <T>{
             return Optional.empty();
         }
     }
+
+    /**
+     * Method check if file exist , if not create this file with default name
+     */
+    private void ifNotExitsCreate(){
+        if(!exists(Path.of(jsonFileName))){
+            try{
+                Files.createFile(Paths.get(defaultFile));
+                jsonFileName = defaultFile;
+            }catch (IOException exc){
+                System.out.println(exc.getMessage());
+            }
+        }
+    }
+
+    /**
+     *
+     * @return String as only name file without path
+     */
+    private String getNameJsonFile(){
+        var arrayNames = jsonFileName.split(SEPARATOR);
+        return arrayNames[arrayNames.length-1];
+    }
+
 
 }
