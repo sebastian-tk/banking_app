@@ -150,6 +150,10 @@ public class CustomersService {
      * @return  object Customer if successfully login, else null
      */
     private Customer login(){
+        if(isThereNoCustomer()){
+            System.out.println("\t => There is no customer");
+            return null;
+        }
         final int NUMBER_LOGIN_ATTEMPTS = 3;
         Customer customer = null;
         boolean run=true;
@@ -336,5 +340,13 @@ public class CustomersService {
      */
     private char[] convertToChars(String expression){
         return expression.toCharArray();
+    }
+
+    /**
+     *
+     * @return true, if there is not any customer, else false
+     */
+    private boolean isThereNoCustomer(){
+        return mapCustomers.isEmpty();
     }
 }

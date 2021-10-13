@@ -3,6 +3,7 @@ package org.app.persistence.converter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import static java.nio.file.Files.*;
 
 public abstract class JsonConverter <T>{
     private final static String SEPARATOR ="/";
-    private final static String DIRECTORY_NAME ="/data";
+    private final static String DIRECTORY_NAME ="./data/";
     private final Gson gsonObj;
     private final Type typeT;
     private final String defaultFile;
@@ -67,7 +68,9 @@ public abstract class JsonConverter <T>{
     private void ifNotExitsCreate(){
         if(!exists(Path.of(jsonFileName))){
             try{
-                Files.createFile(Paths.get(defaultFile));
+                File file = new File(defaultFile);
+                file.getParentFile().mkdirs();
+                file.createNewFile();
                 jsonFileName = defaultFile;
             }catch (IOException exc){
                 System.out.println(exc.getMessage());

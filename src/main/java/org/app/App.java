@@ -89,7 +89,6 @@ public class App {
 
         }catch (Exception e){
             System.out.println("error: "+e.getMessage());
-            e.printStackTrace();
         }
         System.out.println(" ### BANK CLOSED ###");
     }
