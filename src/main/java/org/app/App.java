@@ -47,7 +47,8 @@ import static org.app.customer.Pesel.*;
  */
 public class App {
     public static void main(String[] args) {
-        final String path = "src/main/resources/";
+//        final String path = "src/main/resources/";
+        final String path = "";
         final String fileCustomers = "customers.json";
         final String fileBusinessCustomers = "businessCustomers.json";
         final String filePasswords = "passwords.json";
@@ -89,6 +90,7 @@ public class App {
 
         }catch (Exception e){
             System.out.println("error: "+e.getMessage());
+            e.printStackTrace();
         }
         System.out.println(" ### BANK CLOSED ###");
     }
