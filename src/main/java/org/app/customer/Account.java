@@ -6,10 +6,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-/*
-    Klient posiada jedno lub więcej kont bankowych, które opisywane są
-    przez nazwę, unikalny numer oraz przez ilość środków, które na nich się znajdują.
- */
 @EqualsAndHashCode
 @Getter
 public class Account {

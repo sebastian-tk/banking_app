@@ -15,20 +15,6 @@ import java.util.Set;
 import static org.app.customer.CustomerDataReaderProvider.*;
 import static org.app.customer.ValidatorPersonalData.*;
 
-
-/*
-    Drugi typ to klient biznesowy,który oprócz takich samych danych jak klient indywidualny posiada jeszcze nazwę firmy,
-    adres firmy, numer NIP oraz numer REGON. Dopilnuj, żeby w aplikacji wszystkie przechowywane numery miały prawidłowy
-    format zgodnie z obowiązującymi przepisami.
-
-    Uwaga klient biznesowy może mieć tylko jedno konto przypisane do danego NIP-u.
-    Oprócz tego klient biznesowy za każdym razem, kiedy dokonuje wypłatę środków obciążany jest stała taką samą dla
-    każdego klienta biznesowego prowizją od wypłaconych środków. Dodatkowo klient biznesowy może w okresie rozliczeniowym,
-    który trwa od 1 dnia każdego miesiąca do ostatniego dnia każdego miesiąca dokonać pewną maksymalną stałą dla każdego
-    klienta biznesowego ilość wpłat. Po przekroczeniu tej ilości każda kolejna wpłata obciążona jest stałą dla każdego
-    klienta biznesowego prowizją. Na podstawie powyższego opisu przygotuj aplikację, która pozwoli na obsługę klientów
-    w banku.
- */
 @Getter
 @Setter
 public class BusinessCustomer extends Customer implements ValidatorPersonalData, CustomerDataReaderProvider {

@@ -20,11 +20,6 @@ import static org.app.customer.transaction.Transaction.*;
 import static org.app.customer.transaction.TransactionType.*;
 
 
-/*
-    Pierwszy z nich to klient indywidualny, który opisywany jest przez imię, nazwisko, adres zamieszkania,
-    adres email, numer telefonu oraz numer PESEL. Klient posiada jedno lub więcej kont bankowych, które opisywane są
-    przez nazwę, unikalny numer oraz przez ilość środków, które na nich się znajdują.
- */
 @EqualsAndHashCode
 @Getter
 public class Customer implements ValidatorPersonalData,CustomerDataReaderProvider {
